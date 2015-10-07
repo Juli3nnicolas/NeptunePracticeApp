@@ -9,6 +9,107 @@
 
 using namespace Neptune;
 
+// Terribly ineffective but insightful
+static void ClumsilyDrawTriangle(Neptune::Renderer& renderer)
+{
+	// Create data
+
+	float position[] ={-1,0,0,0,1,0,1,0,0};
+	float color[]    ={0,0,0.5,0,0,0.5,0,0,0.5};
+
+	// Set the VBOs
+
+	GLuint vbos_handle[2];
+	glGenBuffers(2,vbos_handle);
+	GLuint pos_vbo = vbos_handle[0];
+	GLuint col_vbo = vbos_handle[1];
+
+	glBindBuffer(GL_ARRAY_BUFFER,pos_vbo);
+	glBufferData(GL_ARRAY_BUFFER,sizeof(position),position,GL_STATIC_DRAW);
+	
+	glBindBuffer(GL_ARRAY_BUFFER,col_vbo);
+	glBufferData(GL_ARRAY_BUFFER,sizeof(color),color,GL_STATIC_DRAW);
+
+	// Set The VAO
+
+	GLuint vao;
+	glGenVertexArrays(1,&vao);
+	glBindVertexArray(vao);
+
+	// Bind the vbos to the vao
+
+	glBindBuffer(GL_ARRAY_BUFFER,pos_vbo);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,NULL);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER,col_vbo);
+	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,0,NULL);
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0); // Unbind the vao (all the drawing state has been saved)
+
+
+	// Attempt to mess up the drawing process
+	GLuint vao2;
+	{
+		float position[] ={-1,0,0,0,1,0,1,0,0};
+		float color[]    ={0,1,0,0,1,0,0,1,0};
+
+		// Set the VBOs
+
+		GLuint vbos_handle[2];
+		glGenBuffers(2,vbos_handle);
+		GLuint pos_vbo = vbos_handle[0];
+		GLuint col_vbo = vbos_handle[1];
+
+		glBindBuffer(GL_ARRAY_BUFFER,pos_vbo);
+		glBufferData(GL_ARRAY_BUFFER,sizeof(position),position,GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ARRAY_BUFFER,col_vbo);
+		glBufferData(GL_ARRAY_BUFFER,sizeof(color),color,GL_STATIC_DRAW);
+
+		// Set The VAO
+
+		glGenVertexArrays(1,&vao2);
+		glBindVertexArray(vao2);
+
+		// Bind the vbos to the vao
+
+		glBindBuffer(GL_ARRAY_BUFFER,pos_vbo);
+		glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,NULL);
+		glEnableVertexAttribArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER,col_vbo);
+		glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,0,NULL);
+		glEnableVertexAttribArray(1);
+
+		glBindVertexArray(0);
+	
+	}
+
+	// Bind the triangle's VAO to load its shader-inputs
+
+	glBindVertexArray(vao);   // Stage the dark blue triangle's drawing state for rendering
+	glBindVertexArray(vao2);  // Stage the green triangle's drawing state for rendering
+	glBindVertexArray(vao);   // Stage the dark blue triangle's drawing state for rendering
+
+	// Build the display program
+
+	Neptune::Shader vertex("Resources/Shaders/VertexBuffer.vert",GL_VERTEX_SHADER);
+	Neptune::Shader fragment("Resources/Shaders/VertexBuffer.frag",GL_FRAGMENT_SHADER);
+
+	Neptune::GraphicProgram program;
+	program.add(vertex.getId());
+	program.add(fragment.getId());
+	program.build();
+
+	// Set up the renderer
+
+	renderer.setRenderingPgm(program.getId());
+	renderer.setNbverticesToRender(3);
+	renderer.setBackgroundColor(153.0f/255.0f,217.0f/255.0f,234.0f/255.0f,1.0f);
+}
+
 static void DrawTriangle(Neptune::Renderer& renderer)
 {
 	// Create data
@@ -219,9 +320,10 @@ static void DrawXWing(Neptune::Renderer& renderer)
 
 Ex::ExApp::ExApp()
 {
+	ClumsilyDrawTriangle( m_renderer );
 	//DrawTriangle( m_renderer );
 	//DrawTriangleWithGlElement( m_renderer );
-	DrawXWing( m_renderer );
+	//DrawXWing( m_renderer );
 }
 
 Ex::ExApp::~ExApp()
