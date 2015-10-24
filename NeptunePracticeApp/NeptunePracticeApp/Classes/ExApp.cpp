@@ -4,12 +4,12 @@
 #include "ModelLoader/PLYLoader.h"
 #include "System/Type/Integers.h"
 #include "Graphics/Shader.h"
-#include "Graphics/GraphicProgram.h"
+#include "Graphics/GraphicalProgram.h"
 #include "Graphics/Camera.h"
 
 using namespace Neptune;
 
-// Terribly ineffective but insightful
+/*// Terribly ineffective but insightful
 static void ClumsilyDrawTriangle(Neptune::Renderer& renderer)
 {
 	// Create data
@@ -98,7 +98,7 @@ static void ClumsilyDrawTriangle(Neptune::Renderer& renderer)
 	Neptune::Shader vertex("Resources/Shaders/VertexBuffer.vert",GL_VERTEX_SHADER);
 	Neptune::Shader fragment("Resources/Shaders/VertexBuffer.frag",GL_FRAGMENT_SHADER);
 
-	Neptune::GraphicProgram program;
+	Neptune::GraphicalProgram program;
 	program.add(vertex.getId());
 	program.add(fragment.getId());
 	program.build();
@@ -145,7 +145,7 @@ static void DrawTriangle(Neptune::Renderer& renderer)
 	Neptune::Shader vertex("Resources/Shaders/VertexBuffer.vert",GL_VERTEX_SHADER);
 	Neptune::Shader fragment("Resources/Shaders/VertexBuffer.frag",GL_FRAGMENT_SHADER);
 
-	Neptune::GraphicProgram program;
+	Neptune::GraphicalProgram program;
 	program.add(vertex.getId());
 	program.add(fragment.getId());
 	program.build();
@@ -193,7 +193,7 @@ static void DrawTriangleWithGlElement(Neptune::Renderer& renderer)
 	Neptune::Shader vertex("Resources/Shaders/VertexBuffer.vert",GL_VERTEX_SHADER);
 	Neptune::Shader fragment("Resources/Shaders/VertexBuffer.frag",GL_FRAGMENT_SHADER);
 
-	Neptune::GraphicProgram program;
+	Neptune::GraphicalProgram program;
 	program.add(vertex.getId());
 	program.add(fragment.getId());
 	program.build();
@@ -279,7 +279,7 @@ static void DrawXWing(Neptune::Renderer& renderer)
 	Neptune::Shader vertex("Resources/Shaders/SelfPractice/xwingDiffuseLightingUniform.vert",GL_VERTEX_SHADER);
 	Neptune::Shader fragment("Resources/Shaders/SelfPractice/testView.frag",GL_FRAGMENT_SHADER);
 
-	Neptune::GraphicProgram program;
+	Neptune::GraphicalProgram program;
 	program.add(vertex.getId());
 	program.add(fragment.getId());
 	program.build();
@@ -330,3 +330,5 @@ Ex::ExApp::~ExApp()
 {
 
 }
+
+*/
