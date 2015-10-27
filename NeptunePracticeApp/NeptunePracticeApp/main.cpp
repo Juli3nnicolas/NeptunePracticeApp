@@ -2,6 +2,8 @@
 #include "Graphics/Shader.h"
 #include "Graphics/GraphicalProgram.h"
 #include "Graphics/VAORenderer.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 using namespace Neptune;
 
@@ -115,7 +117,7 @@ int main(int argc, char* argv[])
 	{
 		0.0f,0.0f,0.0f,
 		0.5f,0.0f,0.0f,
-		0.0f,-0.5f,0.0f
+		0.0f,0.0f,0.5f
 	};
 
 	float c3[] =
@@ -143,18 +145,33 @@ int main(int argc, char* argv[])
 		c3                            // data
 	};
 
+	// Create a model matrix uniform
+	glm::mat4 model;
+	model = glm::rotate( model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f) );
+
+	GraphicalProgram::UniformVarInput u3(	"rotation_matrix",
+											GraphicalProgram::FLOAT,
+											4,
+											4,
+											16*sizeof(float),
+											glm::value_ptr( model ) );
+
 	// Create a second renderer
 	VAORenderer r2;
 	r2.setDrawingPrimitve(Renderer::DrawingPrimitive::TRIANGLES);
 	r2.setNbverticesToRender(3);
 
+	// Instantiate a shader using rotation_matrix
+	Shader u_vert("Resources/Shaders/UniformVariable.vert", GL_VERTEX_SHADER);
+
 	// Create the program to display a triangle
 	{
 		GraphicalProgram& pgm = r2.createProgram();
-		pgm.add(vert.getId());
+		pgm.add(u_vert.getId());
 		pgm.add(frag.getId());
 		pgm.addShaderAttribute(t3_data);
 		pgm.addShaderAttribute(c3_data);
+		pgm.addUniformVariable(u3);
 		pgm.build();
 	}
 
