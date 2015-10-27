@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 	{
 		0.0f,0.0f,0.0f,
 		-0.5f,0.0f,0.0f,
-		0.0f,0.5f,0.0f
+		0.0f,0.0f,0.5f
 	};
 
 	float c2[] =
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 		0,                                // layout
 		GraphicalProgram::Types::FLOAT,  // Type
 		3,                              //nb components per value
-		sizeof(t2),                  // data size
+		sizeof(t2),                    // data size
 		t2                            // data
 	};
 
@@ -99,14 +99,31 @@ int main(int argc, char* argv[])
 		c2                            // data
 	};
 
-	// Create the program to display a triangle
+	// Instantiate a shader using rotation_matrix
+	Shader u_vert2("Resources/Shaders/UniformVariable.vert",GL_VERTEX_SHADER);
+
+	// Create a model matrix uniform
 	{
-		GraphicalProgram& pgm = r1.createProgram();
-		pgm.add(vert.getId());
-		pgm.add(frag.getId());
-		pgm.addShaderAttribute(t2_data);
-		pgm.addShaderAttribute(c2_data);
-		pgm.build();
+		glm::mat4 model;
+		model = glm::rotate(model,-90.0f,glm::vec3(1.0f,0.0f,0.0f));
+
+		GraphicalProgram::UniformVarInput u2(	"rotation_matrix",
+												GraphicalProgram::FLOAT,
+												4,
+												4,
+												16*sizeof(float),
+												glm::value_ptr(model));
+
+		// Create the program to display a triangle
+		{
+			GraphicalProgram& pgm = r1.createProgram();
+			pgm.add(u_vert2.getId());
+			pgm.add(frag.getId());
+			pgm.addShaderAttribute(t2_data);
+			pgm.addShaderAttribute(c2_data);
+			pgm.addUniformVariable(u2);
+			pgm.build();
+		}
 	}
 
 	////////////////////////////////////////////////
@@ -132,7 +149,7 @@ int main(int argc, char* argv[])
 		0,                                // layout
 		GraphicalProgram::Types::FLOAT,  // Type
 		3,                              //nb components per value
-		sizeof(t3),                  // data size
+		sizeof(t3),                    // data size
 		t3                            // data
 	};
 
