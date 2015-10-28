@@ -2,6 +2,7 @@
 #include "Graphics/Shader.h"
 #include "Graphics/GraphicalProgram.h"
 #include "Graphics/VAORenderer.h"
+#include "Graphics/ElementRenderer.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -194,9 +195,79 @@ int main(int argc, char* argv[])
 
 	////////////////////////////////////////////////
 
+	// FIRST ELEMENT RENDERER
+
+	float position[] ={-1.0f, 0.0f, 0.1f, 0.0f, 1.0f, 0.1f, 1.0f, 0.0f, 0.1f};
+	float color[]    ={1,0,1,1,0,1,1,0,1};
+	u8 list[]        ={0,1,2};
+
+	GraphicalProgram::ShaderAttribute et1_data =
+	{
+		0,                                // layout
+		GraphicalProgram::Types::FLOAT,  // Type
+		3,                              //nb components per value
+		sizeof(position),                    // data size
+		position                            // data
+	};
+
+	GraphicalProgram::ShaderAttribute ec1_data =
+	{
+		1,                                // layout
+		GraphicalProgram::Types::FLOAT,  // Type
+		3,                              //nb components per value
+		sizeof(color),                    // data size
+		color                            // data
+	};
+
+	ElementRenderer er1;
+	er1.setDrawingPrimitve(Renderer::DrawingPrimitive::TRIANGLES);
+	er1.setNbverticesToRender(3);
+	er1.setIndexBufferData( list, sizeof(list), ElementRenderer::IndexType::U8 );
+	
+	// Create the program to display a triangle
+	{
+		GraphicalProgram& pgm = er1.createProgram();
+		pgm.add(vert.getId());
+		pgm.add(frag.getId());
+		pgm.addShaderAttribute(et1_data);
+		pgm.addShaderAttribute(ec1_data);
+		pgm.build();
+	}
+
+	// SECOND ELEMENT RENDERER
+
+	float color2[] = {1.0f, 0.5f, 1.0f, 1.0f, 0.5f, 1.0f, 1.0f, 0.5f, 1.0f};
+	
+	GraphicalProgram::ShaderAttribute ec2_data =
+	{
+		1,                                // layout
+		GraphicalProgram::Types::FLOAT,  // Type
+		3,                              //nb components per value
+		sizeof(color2),                // data size
+		color2                        // data
+	};
+
+	ElementRenderer er2;
+	er2.setDrawingPrimitve(Renderer::DrawingPrimitive::TRIANGLES);
+	er2.setNbverticesToRender(3);
+	er2.setIndexBufferData(list,sizeof(list),ElementRenderer::IndexType::U8);
+
+	// Create the program to display a triangle
+	{
+		GraphicalProgram& pgm = er2.createProgram();
+		pgm.add(u_vert.getId());
+		pgm.add(frag.getId());
+		pgm.addShaderAttribute(et1_data);
+		pgm.addShaderAttribute(ec2_data);
+		pgm.addUniformVariable(u3);
+		pgm.build();
+	}
+
 	// Init the renderers
 	r1.init();
 	r2.init();
+	er1.init();
+	er2.init();
 
 	// Rendering loop
 	float background[4] = { 0.0f,0.8f,1.0f,1.0f };
@@ -205,10 +276,14 @@ int main(int argc, char* argv[])
 		DisplayDeviceInterface::ClearBuffers( background );
 		r1.update();
 		r2.update();
+		er1.update();
+		er2.update();
 		DisplayDeviceInterface::SwapBuffer( window );
 	}
 	r1.terminate();
 	r2.terminate();
+	er1.terminate();
+	er2.terminate();
 
 	return 0;
 }
