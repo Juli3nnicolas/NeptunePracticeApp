@@ -5,6 +5,7 @@
 #include "Graphics/ElementRenderer.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/constants.hpp>
 
 using namespace Neptune;
 
@@ -106,7 +107,7 @@ int main(int argc, char* argv[])
 	// Create a model matrix uniform
 	{
 		glm::mat4 model;
-		model = glm::rotate(model,-90.0f,glm::vec3(1.0f,0.0f,0.0f));
+		model = glm::rotate(model, -glm::half_pi<float>(), glm::vec3(1.0f,0.0f,0.0f)); // GLM rotate makes a computing error
 
 		GraphicalProgram::UniformVarInput u2(	"rotation_matrix",
 												GraphicalProgram::FLOAT,
@@ -165,8 +166,8 @@ int main(int argc, char* argv[])
 
 	// Create a model matrix uniform
 	glm::mat4 model;
-	model = glm::rotate( model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f) );
-
+	model = glm::rotate( model, glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f) ); //glm::rotate makes a computing mistake
+	
 	GraphicalProgram::UniformVarInput u3(	"rotation_matrix",
 											GraphicalProgram::FLOAT,
 											4,
@@ -236,8 +237,8 @@ int main(int argc, char* argv[])
 
 	// SECOND ELEMENT RENDERER
 
-	float color2[] = {1.0f, 0.5f, 1.0f, 1.0f, 0.5f, 1.0f, 1.0f, 0.5f, 1.0f};
-	
+	float color2[]    = {1.0f, 0.5f, 1.0f, 1.0f, 0.5f, 1.0f, 1.0f, 0.5f, 1.0f};
+
 	GraphicalProgram::ShaderAttribute ec2_data =
 	{
 		1,                                // layout
@@ -246,6 +247,18 @@ int main(int argc, char* argv[])
 		sizeof(color2),                // data size
 		color2                        // data
 	};
+
+	// Create a model matrix uniform
+	glm::mat4 inversion;
+	inversion = glm::rotate(inversion, glm::pi<float>(), glm::vec3(1.0f,0.0f,0.0f));
+	inversion[2][2] *= -1;
+
+	GraphicalProgram::UniformVarInput u4("rotation_matrix",					// I should use another shader...
+											GraphicalProgram::FLOAT,
+											4,
+											4,
+											16*sizeof(float),
+											glm::value_ptr(inversion));
 
 	ElementRenderer er2;
 	er2.setDrawingPrimitve(Renderer::DrawingPrimitive::TRIANGLES);
@@ -259,7 +272,7 @@ int main(int argc, char* argv[])
 		pgm.add(frag.getId());
 		pgm.addShaderAttribute(et1_data);
 		pgm.addShaderAttribute(ec2_data);
-		pgm.addUniformVariable(u3);
+		pgm.addUniformVariable(u4);
 		pgm.build();
 	}
 
