@@ -7,9 +7,36 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/constants.hpp>
 
+#include "Graphics/Polygons/CubeFactory.h"
+
 using namespace Neptune;
 
 int main(int argc, char* argv[])
+{
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",1024,768);
+	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
+
+	CubeFactory factory(1.0f, 0.5f, 0.0f);
+	View* cube = factory.create();
+	cube->init();
+
+	float background[4] = { 0.0f,0.0f,0.0f,0.0f };
+	while(true)
+	{
+		DisplayDeviceInterface::ClearBuffers(background);
+		cube->update();
+		DisplayDeviceInterface::SwapBuffer(window);
+	}
+
+	cube->terminate();
+
+	DisplayDeviceInterface::DestroyWindow(window);
+	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
+
+	return 0;
+}
+
+/*int main(int argc, char* argv[])
 {
 	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow( "Test", 1024, 768 );
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext( window, 3, 4 );
@@ -299,4 +326,4 @@ int main(int argc, char* argv[])
 	er2.terminate();
 
 	return 0;
-}
+}*/

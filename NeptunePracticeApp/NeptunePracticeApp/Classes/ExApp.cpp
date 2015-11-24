@@ -1,7 +1,7 @@
 #include "ExApp.h"
 
 #include "Graphics/Renderer.h"
-#include "ModelLoader/PLYLoader.h"
+#include "Graphics/PLYLoader.h"
 #include "System/Type/Integers.h"
 #include "Graphics/Shader.h"
 #include "Graphics/GraphicalProgram.h"
