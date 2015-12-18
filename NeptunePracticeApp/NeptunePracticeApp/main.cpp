@@ -7,8 +7,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/constants.hpp>
 
-#include "Graphics/Polygons/CubeFactory.h"
-#include "Graphics/Polygons/TriangleFactory.h"
+#include "Graphics/Factories/CubeFactory.h"
+#include "Graphics/Factories/TriangleFactory.h"
+#include "Graphics/Factories/ModelFactory.h"
 #include "Math/Vectors/Vec3.h"
 
 using namespace Neptune;
@@ -18,7 +19,7 @@ int main(int argc, char* argv[])
 	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",1024,768);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
 
-	CubeFactory factory(1.0f, 0.5f, 0.0f);
+	ModelFactory factory(1.0f, 0.5f, 0.0f);
 	View* cube = factory.create();
 	cube->init();
 	cube->getTransform().scale(0.25f, 0.25f, 0.25f);
