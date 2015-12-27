@@ -1,18 +1,11 @@
 #include "Graphics/DisplayDeviceInterface.h"
-#include "Graphics/Shader.h"
-#include "Graphics/GraphicalProgram.h"
-#include "Graphics/VAORenderer.h"
-#include "Graphics/ElementRenderer.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/constants.hpp>
 
 #include "Graphics/Factories/CubeFactory.h"
 #include "Graphics/Factories/TriangleFactory.h"
 #include "Graphics/Factories/ModelFactory.h"
-#include "Math/Vectors/Vec3.h"
 
 #include "Graphics/Camera.h"
+#include "Math/Vectors/Vec3.h"
 
 using namespace Neptune;
 
@@ -24,7 +17,7 @@ int main(int argc, char* argv[])
 	Camera camera( Vec3(0.0f, 0.0f, -1.0f), Vec3(0.0f, 0.25f, 0.0f), Vec3(0.0f, 1.0f, 0.0f) );
 	camera.setScreenRatio( 1024.0f/768.0f );
 
-	TriangleFactory factory(1.0f, 0.5f, 0.0f);
+	ModelFactory factory("Resources/Models/xwing.ply");
 	View* cube = factory.create();
 	cube->init();
 	cube->getTransform().scale(0.25f, 0.25f, 0.25f);
@@ -57,8 +50,12 @@ int main(int argc, char* argv[])
 	}
 
 	cube->terminate();
+	cube2->terminate();
+	cube3->terminate();
 
 	delete cube;
+	delete cube2;
+	delete cube3;
 
 	DisplayDeviceInterface::DestroyWindow(window);
 	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
