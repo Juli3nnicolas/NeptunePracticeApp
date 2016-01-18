@@ -4,7 +4,7 @@
 #include "Graphics/PLYLoader.h"
 #include "System/Type/Integers.h"
 #include "Graphics/Shader.h"
-#include "Graphics/GraphicalProgram.h"
+#include "Graphics/GraphicsProgram.h"
 #include "Graphics/Camera.h"
 
 using namespace Neptune;
