@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	TempFPSCameraController ctrl(&camera);
 	ctrl.init();
 
-	CubeFactory cf(0.1f, 0.3f, 0.3f);
+	CubeFactory cf( {0.8f, 0.5f, 0.0f, 1.0f} );
 	const u8 OFFSET = 1;
 	//ModelFactory cf("Resources/Models/LowPolyTree.ply");
 	//const u8 OFFSET = 5;
