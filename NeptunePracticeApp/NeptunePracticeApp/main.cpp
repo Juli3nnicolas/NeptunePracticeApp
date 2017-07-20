@@ -29,10 +29,10 @@ int main(int argc, char* argv[])
 	TempFPSCameraController ctrl(&camera);
 	ctrl.init();
 
-	CubeFactory cf( {0.8f, 0.5f, 0.0f, 1.0f} );
-	const u8 OFFSET = 1;
-	//ModelFactory cf("Resources/Models/LowPolyTree.ply");
-	//const u8 OFFSET = 5;
+	//CubeFactory cf( {0.8f, 0.5f, 0.0f, 1.0f} );
+	//const u8 OFFSET = 1;
+	ModelFactory cf("Resources/Models/LowPolyTree.ply");
+	const u8 OFFSET = 5;
 	const u8 NB_OBJECTS = 100;
 	View* view_table[NB_OBJECTS] = {0};
 
@@ -42,7 +42,6 @@ int main(int argc, char* argv[])
 		view_table[i]->init();
 		view_table[i]->getTransform().translate(-2*OFFSET*(i%2) + 1.0f, 0.0f, i*OFFSET);
 		view_table[i]->bindToCamera(&camera);
-		view_table[i]->bindToAmbientLight(&ambientLight);
 	}
 
 	float background[4] = { 0.0f/255.0f,0.0f/255.0f,0.0f/255.0f,0.0f };
@@ -61,7 +60,6 @@ int main(int argc, char* argv[])
 	for(u8 i = 0; i < 100; i++)
 	{
 		view_table[i]->unbindFromCamera();
-		view_table[i]->unbindFromAmbientLight();
 		view_table[i]->terminate();
 		delete view_table[i];
 	}	
