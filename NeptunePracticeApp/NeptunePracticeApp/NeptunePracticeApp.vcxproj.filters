@@ -21,9 +21,15 @@
     <ClCompile Include="Classes\ExApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FactoryExamples.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\ExApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FactoryExamples.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
