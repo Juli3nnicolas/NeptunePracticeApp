@@ -24,12 +24,18 @@
     <ClCompile Include="FactoryExamples.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ViewSpawnerExamples.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\ExApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FactoryExamples.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewSpawnerExamples.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
