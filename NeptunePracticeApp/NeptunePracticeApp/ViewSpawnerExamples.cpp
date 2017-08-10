@@ -44,7 +44,7 @@ void ViewSpawnerExamples::TimeControledTriangleColor()
 	Shader vert(vertexShaderName.c_str(),GL_VERTEX_SHADER);
 	Shader frag(fragmentShaderName.c_str(),GL_FRAGMENT_SHADER);
 
-	GraphicsProgram pgm;
+	GraphicsProgram pgm("Bob");
 	pgm.add(vert.getId());
 	pgm.add(frag.getId());
 
@@ -60,8 +60,8 @@ void ViewSpawnerExamples::TimeControledTriangleColor()
 		&current_time);
 
 	// Creates the spawner
-	const char PGM_NAME[] = "Bob";
-	TriangleSpawner spawner(PGM_NAME,&pgm);
+	const GraphicsProgram::ProgramName PGM_NAME = pgm.getName();
+	TriangleSpawner spawner(&pgm);
 	spawner.createVertexData();
 	spawner.createColorData({1.0f,0.8f,0.0f,1.0f});
 	spawner.mapVertexData(PGM_NAME,0);
@@ -79,7 +79,7 @@ void ViewSpawnerExamples::TimeControledTriangleColor()
 		DisplayDeviceInterface::ClearBuffers(background);
 
 		current_time = Example::GetCurrentTime();
-		view->getRenderer().updateUniform(0,"Time",&current_time);
+		view->updateUniform(PGM_NAME,"Time",&current_time);
 		view->update();
 
 		DisplayDeviceInterface::SwapBuffer(window);
