@@ -2,9 +2,13 @@
 
 #include "Graphics/Factories/TriangleSpawner.h"
 #include "Graphics/Factories/PlanSpawner.h"
-#include "Graphics/Factories/PlanFactory.h"
-#include "Math/Vectors/Vec3.h"
 
+#include "Graphics/Factories/TriangleFactory.h"
+#include "Graphics/Factories/PlanFactory.h"
+#include "Graphics/Factories/CubeFactory.h"
+#include "Graphics/Factories/ModelFactory.h"
+
+#include "Math/Vectors/Vec3.h"
 #include "Graphics/Shader.h"
 #include "Graphics/Color.h"
 #include "Graphics/View.h"
@@ -32,17 +36,29 @@ int main(int argc, char* argv[])
 
 
 	Color color {1.0f, 0.0f, 0.0f, 1.0f};
+
+	//TriangleFactory factory(color);
+	//TriangleFactory factory("Resources/Textures/Grass.png");
 	//PlanFactory factory(color);
-	PlanFactory factory("Resources/Textures/Grass.png");
+	//PlanFactory factory("Resources/Textures/Grass.png");
+	//CubeFactory factory(color);
+	//CubeFactory factory("Resources/Textures/Grass.png");
+	ModelFactory  factory("Resources/Models/xwing.ply");
+	
 	View* v1 = factory.create();
 	View* v2 = factory.create();
 	v1->init();
+	v1->getTransform().rotate(0.0f, 0.0f, 45.0f);
+	v1->getTransform().rotate(45.0f, 0.0f, 45.0f);
+	v1->getTransform().scale(0.25f, 0.25f, 0.25f);
 
 	v2->init();
 	v2->getTransform().translate(-0.6f, 0.0f, 0.0f);
+	v2->getTransform().rotate(45.0f, 0.0f, 45.0f);
+	v2->getTransform().scale(0.25f, 0.25f, 0.25f);
 
 	// main loop
-	float background[4] = {255.0f/255.0f,255.0f/255.0f,255.0f/255.0f,0.0f};
+	float background[4] = {0.0f/255.0f,0.0f/255.0f,0.0f/255.0f,0.0f};
 	while(true)
 	{
 		DisplayDeviceInterface::ClearBuffers(background);
