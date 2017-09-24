@@ -1,7 +1,7 @@
 #include "Mandelbrot.h"
 
 #include "Graphics/DisplayDeviceInterface.h"
-#include "Graphics/Factories/PlanSpawner.h"
+#include "Graphics/Spawners/PlanSpawner.h"
 #include "Graphics/Shader.h"
 #include "Graphics/View.h"
 #include "Graphics/UniformVarNames.h"

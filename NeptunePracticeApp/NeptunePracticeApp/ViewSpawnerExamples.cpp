@@ -1,7 +1,7 @@
 #include "ViewSpawnerExamples.h"
 #include "Graphics/DisplayDeviceInterface.h"
 
-#include "Graphics/Factories/TriangleSpawner.h"
+#include "Graphics/Spawners/TriangleSpawner.h"
 #include "Math/Vectors/Vec3.h"
 
 #include "Graphics/Shader.h"
