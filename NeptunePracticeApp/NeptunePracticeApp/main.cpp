@@ -1,7 +1,8 @@
 #include "Graphics/DisplayDeviceInterface.h"
 
-#include "Graphics/Factories/TriangleSpawner.h"
-#include "Graphics/Factories/PlanSpawner.h"
+#include "Graphics/Spawners/TriangleSpawner.h"
+#include "Graphics/Spawners/PlanSpawner.h"
+#include "Graphics/Spawners/CubeSpawner.h"
 
 #include "Graphics/Factories/TriangleFactory.h"
 #include "Graphics/Factories/PlanFactory.h"
@@ -16,6 +17,10 @@
 #include "Graphics/UniformVarNames.h"
 #include "Graphics/Texture.h"
 
+#include "Input/EventSystemInterface.h"
+#include "Graphics/Camera.h"
+#include "Camera/Controller/TempFPSCameraController.h"
+
 #include "Physics/Mechanics/Position.h"
 
 #include <string>
@@ -27,56 +32,184 @@
 
 using namespace Neptune;
 
-
-
-int main(int argc, char* argv[])
+static void FactoryExample()
 {
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",1024,768);
+	const u32 WIDTH = 1024, HEIGHT = 768;
+
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",WIDTH, HEIGHT);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
+	EventSystemInterface::StartUp();
 
+	// Set camera location
+	Camera camera;							// Pos = (0,0,0)
+	camera.translate(0.0f, 1.0f, -5.0f);	// Step back from 5 units
+	camera.setScreenRatio(static_cast<float>(WIDTH) / HEIGHT);
 
-	Color color {1.0f, 0.0f, 0.0f, 1.0f};
+	// Set camera controller
+	TempFPSCameraController controller(&camera);
+	controller.init();
 
+	// Create views
+
+	Color color {1.0f, 1.0f, 0.0f, 1.0f};
 	//TriangleFactory factory(color);
 	//TriangleFactory factory("Resources/Textures/Grass.png");
 	//PlanFactory factory(color);
 	//PlanFactory factory("Resources/Textures/Grass.png");
-	//CubeFactory factory(color);
+	CubeFactory factory(color);
 	//CubeFactory factory("Resources/Textures/Grass.png");
-	ModelFactory  factory("Resources/Models/xwing.ply");
+	//ModelFactory  factory("Resources/Models/xwing.ply");
 	
-	View* v1 = factory.create();
-	View* v2 = factory.create();
-	v1->init();
-	v1->getTransform().rotate(0.0f, 0.0f, 45.0f);
-	v1->getTransform().rotate(45.0f, 0.0f, 45.0f);
-	v1->getTransform().scale(0.25f, 0.25f, 0.25f);
+	const u32 NB_VIEWS = 100;
+	View* view_table[NB_VIEWS] = {nullptr}; 
+	for (u32 i = 0; i < NB_VIEWS; i++)
+	{
+		const float OFFSET = 2.0f;
 
-	v2->init();
-	v2->getTransform().translate(-0.6f, 0.0f, 0.0f);
-	v2->getTransform().rotate(45.0f, 0.0f, 45.0f);
-	v2->getTransform().scale(0.25f, 0.25f, 0.25f);
+		view_table[i] = factory.create();
+		view_table[i]->init();
+		view_table[i]->getTransform().translate(0, 0.0f, i*OFFSET);
+
+		view_table[i]->bindToCamera(&camera);
+	}
 
 	// main loop
-	float background[4] = {0.0f/255.0f,0.0f/255.0f,0.0f/255.0f,0.0f};
+	float WHITE[4] = {255.0f/255.0f,255.0f/255.0f,255.0f/255.0f,0.0f};
+	float BLACK[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	float* background = BLACK;
 	while(true)
 	{
 		DisplayDeviceInterface::ClearBuffers(background);
 
-		v1->update();
-		v2->update();
+		controller.update();
+		for (auto& v : view_table)
+			v->update();
 
 		DisplayDeviceInterface::SwapBuffer(window);
 	}
 
-	// Cleanup/shutdown
-	v1->terminate();
-	v2->terminate();
-	delete v1;
-	delete v2;
+	for (u32 i = 0; i < NB_VIEWS; i++)
+	{
+		view_table[i]->terminate();
+		delete view_table[i];
+	}
 
 	DisplayDeviceInterface::DestroyWindow(window);
 	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
+	EventSystemInterface::ShutDown();
+}
+
+static void SpawnerExample()
+{
+	const u32 WIDTH = 1024, HEIGHT = 768;
+
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",WIDTH, HEIGHT);
+	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
+	EventSystemInterface::StartUp();
+
+	// Set camera location
+	Camera camera;							// Pos = (0,0,0)
+	camera.translate(0.0f, 1.0f, -5.0f);	// Step back from 5 units
+	camera.setScreenRatio(static_cast<float>(WIDTH) / HEIGHT);
+
+	// Set camera controller
+	TempFPSCameraController controller(&camera);
+	controller.init();
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// PGM SET UP
+
+	std::string vertexShaderName   = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/DiffuseLight.vert";
+	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/PassThrough.frag";
+	
+	Shader vert(vertexShaderName.c_str(),GL_VERTEX_SHADER);
+	Shader frag(fragmentShaderName.c_str(),GL_FRAGMENT_SHADER);
+
+	GraphicsProgram pgm("DiffuseLight");
+	const auto PGM_NAME = pgm.getName();
+	pgm.add(vert.getId());
+	pgm.add(frag.getId());
+
+
+	// Uniforms
+	float diffuse_light_dir[3] = {-1.0f, -2.0f, 1.0f};
+	GraphicsProgram::UniformVarInput diffuse_light_dir_uni("DiffuseLightDirection",
+		GraphicsProgram::FLOAT,
+		3,
+		1,
+		3*sizeof(float),
+		diffuse_light_dir);
+
+	float diffuse_light_color[3] = {1.0f, 1.0f, 1.0f};
+	GraphicsProgram::UniformVarInput diffuse_light_color_uni("DiffuseLightColor",
+		GraphicsProgram::FLOAT,
+		3,
+		1,
+		3*sizeof(float),
+		diffuse_light_color);
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Create views
+	Color color {1.0f, 1.0f, 0.0f, 1.0f};
+	CubeSpawner factory(&pgm);
+	factory.createVertexData();
+	factory.createColorData(color);
+	factory.createNormalData();
+	factory.mapVertexData(PGM_NAME, 0);
+	factory.mapColorData(PGM_NAME, 1);
+	factory.mapNormalData(PGM_NAME, 2);
+	factory.useWorldAndProjectionMatrices(PGM_NAME);
+	factory.addUniformVariable(PGM_NAME, diffuse_light_dir_uni);
+	factory.addUniformVariable(PGM_NAME, diffuse_light_color_uni);
+
+	const u32 NB_VIEWS = 100;
+	View* view_table[NB_VIEWS] = {nullptr}; 
+	for (u32 i = 0; i < NB_VIEWS; i++)
+	{
+		const float OFFSET = 2.0f;
+
+		view_table[i] = factory.create();
+		view_table[i]->init();
+		view_table[i]->getTransform().translate(0, 0.0f, i*OFFSET);
+		//view_table[i]->getTransform().rotate(0.0f, 45.0f, 0.0f);
+
+		view_table[i]->bindToCamera(&camera);
+	}
+
+	// main loop
+	float WHITE[4] = {255.0f/255.0f,255.0f/255.0f,255.0f/255.0f,0.0f};
+	float BLACK[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	float* background = BLACK;
+	while(true)
+	{
+		DisplayDeviceInterface::ClearBuffers(background);
+
+		controller.update();
+		for (auto& v : view_table)
+		{	v->getTransform().rotate(0.0f, 1.0f, 0.0f);
+			v->update();
+		}
+
+		DisplayDeviceInterface::SwapBuffer(window);
+	}
+
+	for (u32 i = 0; i < NB_VIEWS; i++)
+	{
+		view_table[i]->terminate();
+		delete view_table[i];
+	}
+
+	DisplayDeviceInterface::DestroyWindow(window);
+	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
+	EventSystemInterface::ShutDown();
+}
+
+int main(int argc, char* argv[])
+{
+	SpawnerExample();
+	//FactoryExample();
 
 	return 0;
 }

@@ -120,7 +120,7 @@ void ViewSpawnerExamples::ModelViewMatrix()
 	spawner.setWorldPosition({-0.5f, -0.5f, 0.0f});
 	spawner.mapVertexData(PGM_NAME, 0);
 	spawner.mapColorData(PGM_NAME, 1);
-	spawner.useWorldMatrix(PGM_NAME, NEP_UNIVNAME_MV_MATRIX);
+	spawner.useWorldAndProjectionMatrices(PGM_NAME);
 
 	// Create a view
 	View* view = spawner.create();
