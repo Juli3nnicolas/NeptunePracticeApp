@@ -32,74 +32,7 @@
 
 using namespace Neptune;
 
-static void FactoryExample()
-{
-	const u32 WIDTH = 1024, HEIGHT = 768;
-
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",WIDTH, HEIGHT);
-	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
-	EventSystemInterface::StartUp();
-
-	// Set camera location
-	Camera camera;							// Pos = (0,0,0)
-	camera.translate(0.0f, 1.0f, -5.0f);	// Step back from 5 units
-	camera.setScreenRatio(static_cast<float>(WIDTH) / HEIGHT);
-
-	// Set camera controller
-	TempFPSCameraController controller(&camera);
-	controller.init();
-
-	// Create views
-
-	Color color {1.0f, 1.0f, 0.0f, 1.0f};
-	//TriangleFactory factory(color);
-	//TriangleFactory factory("Resources/Textures/Grass.png");
-	//PlanFactory factory(color);
-	//PlanFactory factory("Resources/Textures/Grass.png");
-	CubeFactory factory(color);
-	//CubeFactory factory("Resources/Textures/Grass.png");
-	//ModelFactory  factory("Resources/Models/xwing.ply");
-	
-	const u32 NB_VIEWS = 100;
-	View* view_table[NB_VIEWS] = {nullptr}; 
-	for (u32 i = 0; i < NB_VIEWS; i++)
-	{
-		const float OFFSET = 2.0f;
-
-		view_table[i] = factory.create();
-		view_table[i]->init();
-		view_table[i]->getTransform().translate(0, 0.0f, i*OFFSET);
-
-		view_table[i]->bindToCamera(&camera);
-	}
-
-	// main loop
-	float WHITE[4] = {255.0f/255.0f,255.0f/255.0f,255.0f/255.0f,0.0f};
-	float BLACK[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	float* background = BLACK;
-	while(true)
-	{
-		DisplayDeviceInterface::ClearBuffers(background);
-
-		controller.update();
-		for (auto& v : view_table)
-			v->update();
-
-		DisplayDeviceInterface::SwapBuffer(window);
-	}
-
-	for (u32 i = 0; i < NB_VIEWS; i++)
-	{
-		view_table[i]->terminate();
-		delete view_table[i];
-	}
-
-	DisplayDeviceInterface::DestroyWindow(window);
-	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
-	EventSystemInterface::ShutDown();
-}
-
-static void SpawnerExample()
+static void VRAMBufferDuplicationTest()
 {
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
@@ -208,8 +141,7 @@ static void SpawnerExample()
 
 int main(int argc, char* argv[])
 {
-	SpawnerExample();
-	//FactoryExample();
+	VRAMBufferDuplicationTest();
 
 	return 0;
 }
