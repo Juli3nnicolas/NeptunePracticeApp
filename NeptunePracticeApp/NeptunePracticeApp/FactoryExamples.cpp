@@ -71,3 +71,76 @@ void FactoryExamples::ViewRows()
 	DisplayDeviceInterface::DestroyWindow(window);
 	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
 }
+
+void FactoryExamples::Display100PLYModels()
+{
+	const u32 WIDTH = 1024, HEIGHT = 768;
+
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",WIDTH, HEIGHT);
+	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
+	EventSystemInterface::StartUp();
+
+	// Set camera location
+	Camera camera;							// Pos = (0,0,0)
+	camera.translate(0.0f, 1.0f, -5.0f);	// Step back from 5 units
+	camera.setScreenRatio(static_cast<float>(WIDTH) / HEIGHT);
+
+	// Set camera controller
+	TempFPSCameraController controller(&camera);
+	controller.init();
+
+	// Create views
+
+	Color color {1.0f, 1.0f, 0.0f, 1.0f};
+	ModelFactory  factory("Resources/Models/xwing.ply");
+	
+	const u32 NB_VIEWS = 100;
+	View* view_table[NB_VIEWS] = {nullptr}; 
+
+	{
+		const float OFFSET = 2.0f;
+
+		view_table[0] = factory.create();
+		view_table[0]->init();
+		view_table[0]->getTransform().translate(0, 0.0f, 0);
+
+		view_table[0]->bindToCamera(&camera);
+	}
+
+	for (u32 i = 1; i < NB_VIEWS; i++)
+	{
+		const float OFFSET = 2.0f;
+
+		view_table[i] = factory.create();
+		view_table[i]->init();
+		//view_table[i]->cloneInit(*view_table[0]);
+		view_table[i]->getTransform().translate(0, 0.0f, i*OFFSET);
+
+		view_table[i]->bindToCamera(&camera);
+	}
+
+	// main loop
+	float WHITE[4] = {255.0f/255.0f,255.0f/255.0f,255.0f/255.0f,0.0f};
+	float BLACK[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	float* background = BLACK;
+	while(true)
+	{
+		DisplayDeviceInterface::ClearBuffers(background);
+
+		controller.update();
+		for (auto& v : view_table)
+			v->update();
+
+		DisplayDeviceInterface::SwapBuffer(window);
+	}
+
+	for (u32 i = 0; i < NB_VIEWS; i++)
+	{
+		view_table[i]->terminate();
+		delete view_table[i];
+	}
+
+	DisplayDeviceInterface::DestroyWindow(window);
+	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
+	EventSystemInterface::ShutDown();
+}

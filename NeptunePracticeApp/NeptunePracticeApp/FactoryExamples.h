@@ -3,4 +3,5 @@
 namespace FactoryExamples
 {
 	void ViewRows();
+	void Display100PLYModels();
 }
