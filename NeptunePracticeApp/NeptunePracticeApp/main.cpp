@@ -145,6 +145,41 @@ void ModelTest()
 	//ModelSpawner factory(&pgm, CLASSIC_SONIC);
 	//ModelSpawner factory(&pgm, NISSAN_370Z);
 	//ModelSpawner factory(&pgm, RIDER);
+
+
+	////////////////////////// DEBUG
+
+	std::unordered_map<std::string, u8> texture_bindings;
+	factory.getTextureBindingInfo(texture_bindings);
+
+	// Test - set the same mapping as the hard-coded array (see top of the file)
+	// Useful if one wants to share textures
+	texture_bindings["Resources/Models/Objs/Sonic/f1f6d3cb.jpg"] = 3;
+	texture_bindings["Resources/Models/Objs/Sonic/bab97353.jpg"] = 1;
+	factory.setTextureBindingInfo(texture_bindings);
+	//
+
+	std::vector<Texture> textures;
+	for (const auto& binding : texture_bindings )
+	{
+		textures.emplace_back(binding.first.c_str());
+		auto& texture = textures.back();
+		texture.setIndex(binding.second);
+		texture.init();
+
+		//factory.setTexture(PGM_NAME, &texture);
+	}
+
+	std::vector<u32> texture_map;
+	factory.generateTextureBindingTable(texture_map);
+	texture_binding_index_array_uni.setData(texture_map.data());
+
+	for (auto& t : textures)
+		factory.setTexture(PGM_NAME, &t);
+
+	/////////
+
+
 	factory.createVertexData();
 	//factory.createColorData(color);
 	//factory.createNormalData();
@@ -158,6 +193,7 @@ void ModelTest()
 	//factory.addUniformVariable(PGM_NAME, diffuse_light_color_uni);
 	factory.addUniformVariable(PGM_NAME, texture_binding_index_array_uni);
 
+	/*
 	Texture texture1("Resources/Models/Objs/Sonic/64124be4.jpg");
 	//Texture texture1("Resources/Textures/Square1.png");
 	texture1.setIndex(0);
@@ -174,11 +210,12 @@ void ModelTest()
 	//Texture texture4("Resources/Textures/Square4.png");
 	texture4.setIndex(3);
 	texture4.init();
+	*/
 
-	factory.setTexture(PGM_NAME, &texture1);
+	/*factory.setTexture(PGM_NAME, &texture1);
 	factory.setTexture(PGM_NAME, &texture2);
 	factory.setTexture(PGM_NAME, &texture3);
-	factory.setTexture(PGM_NAME, &texture4);
+	factory.setTexture(PGM_NAME, &texture4);*/
 
 	const u32 NB_VIEWS = 1;
 	View* view_table[NB_VIEWS] = {nullptr}; 
