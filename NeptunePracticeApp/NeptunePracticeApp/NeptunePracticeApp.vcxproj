@@ -120,6 +120,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>NEP_DEBUG;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Neptune\Dependencies\All\Include;$(ProjectDir)..\..\..\Neptune\Dependencies\Win32\Include;$(ProjectDir)..\..\..\Neptune\Engine\Win32\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Win32\Core;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\Core;$(ProjectDir)Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,6 +137,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>NEP_DEBUG;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Neptune\Dependencies\All\Include;$(ProjectDir)..\..\..\Neptune\Dependencies\Win32\Include;$(ProjectDir)..\..\..\Neptune\Engine\Win32\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Win32\Core;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\Core;$(ProjectDir)Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,6 +156,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NEP_DEBUG;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Neptune\Dependencies\All\Include;$(ProjectDir)..\..\..\Neptune\Dependencies\Win32\Include;$(ProjectDir)..\..\..\Neptune\Engine\Win32\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Win32\Core;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\Core;$(ProjectDir)Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -174,6 +177,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NEP_DEBUG;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Neptune\Dependencies\All\Include;$(ProjectDir)..\..\..\Neptune\Dependencies\Win32\Include;$(ProjectDir)..\..\..\Neptune\Engine\Win32\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Win32\Core;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\Core;$(ProjectDir)Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -194,6 +198,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Neptune\Dependencies\All\Include;$(ProjectDir)..\..\..\Neptune\Dependencies\Win32\Include;$(ProjectDir)..\..\..\Neptune\Engine\Win32\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Win32\Core;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\Core;$(ProjectDir)Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -214,6 +219,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Neptune\Dependencies\All\Include;$(ProjectDir)..\..\..\Neptune\Dependencies\Win32\Include;$(ProjectDir)..\..\..\Neptune\Engine\Win32\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Win32\Core;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\Core;$(ProjectDir)Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
