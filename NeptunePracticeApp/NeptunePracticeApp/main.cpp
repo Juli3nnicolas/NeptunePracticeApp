@@ -140,9 +140,9 @@ void ModelTest()
 	//ModelSpawner factory(&pgm, CUBE);
 	//ModelSpawner factory(&pgm, OBJ_CUBE);
 	//ModelSpawner factory(&pgm, POLYGONES);
-	ModelSpawner factory(&pgm, SONIC_OBJ);
+	//ModelSpawner factory(&pgm, SONIC_OBJ);
 	//ModelSpawner factory(&pgm, PLANS);
-	//ModelSpawner factory(&pgm, CLASSIC_SONIC);
+	ModelSpawner factory(&pgm, CLASSIC_SONIC);
 	//ModelSpawner factory(&pgm, NISSAN_370Z);
 	//ModelSpawner factory(&pgm, RIDER);
 
@@ -150,13 +150,13 @@ void ModelTest()
 	////////////////////////// DEBUG
 
 	std::unordered_map<std::string, u8> texture_bindings;
-	factory.getTextureBindingInfo(texture_bindings);
+	factory.getTextureBindingPoints(texture_bindings);
 
 	// Test - set the same mapping as the hard-coded array (see top of the file)
 	// Useful if one wants to share textures
-	texture_bindings["Resources/Models/Objs/Sonic/f1f6d3cb.jpg"] = 3;
-	texture_bindings["Resources/Models/Objs/Sonic/bab97353.jpg"] = 1;
-	factory.setTextureBindingInfo(texture_bindings);
+	//texture_bindings["Resources/Models/Objs/Sonic/f1f6d3cb.jpg"] = 3;
+	//texture_bindings["Resources/Models/Objs/Sonic/bab97353.jpg"] = 1;
+	//factory.setTextureBindingPoints(texture_bindings);
 	//
 
 	std::vector<Texture> textures;
