@@ -841,31 +841,31 @@
   </library_lights>
   <library_images>
     <image id="chr_classic_sonic_cloth_dif_HD_png">
-      <init_from>./images/chr_classic_sonic_cloth_dif_HD.png</init_from>
+      <init_from>ClassicSonic/chr_classic_sonic_cloth_dif_HD.png</init_from>
     </image>
     <image id="chr_classic_sonic_cloth_nrm_HD_png">
-      <init_from>./images/chr_classic_sonic_cloth_nrm_HD.png</init_from>
+      <init_from>ClassicSonic/chr_classic_sonic_cloth_nrm_HD.png</init_from>
     </image>
     <image id="chr_classic_sonic_cloth_spc_HD_png">
-      <init_from>./images/chr_classic_sonic_cloth_spc_HD.png</init_from>
+      <init_from>ClassicSonic/chr_classic_sonic_cloth_spc_HD.png</init_from>
     </image>
     <image id="chr_classic_sonic_eye_dif_HD_png">
-      <init_from>./images/chr_classic_sonic_eye_dif_HD.png</init_from>
+      <init_from>ClassicSonic/chr_classic_sonic_eye_dif_HD.png</init_from>
     </image>
     <image id="chr_classic_sonic_eye_nrm_HD_BA_png">
-      <init_from>./images/chr_classic_sonic_eye_nrm_HD_BA.png</init_from>
+      <init_from>ClassicSonic/chr_classic_sonic_eye_nrm_HD_BA.png</init_from>
     </image>
     <image id="chr_classic_sonic_shoe_dif_HD_png">
-      <init_from>./images/chr_classic_sonic_shoe_dif_HD.png</init_from>
+      <init_from>ClassicSonic/chr_classic_sonic_shoe_dif_HD.png</init_from>
     </image>
     <image id="chr_classic_sonic_shoe_spc_HD_png">
-      <init_from>./images/chr_classic_sonic_shoe_spc_HD.png</init_from>
+      <init_from>ClassicSonic/chr_classic_sonic_shoe_spc_HD.png</init_from>
     </image>
     <image id="chr_classic_sonic_skin_dif_HD_png">
-      <init_from>./images/chr_classic_sonic_skin_dif_HD.png</init_from>
+      <init_from>ClassicSonic/chr_classic_sonic_skin_dif_HD.png</init_from>
     </image>
     <image id="chr_classic_sonic_skin_spc_HD_png">
-      <init_from>./images/chr_classic_sonic_skin_spc_HD.png</init_from>
+      <init_from>ClassicSonic/chr_classic_sonic_skin_spc_HD.png</init_from>
     </image>
   </library_images>
   <library_visual_scenes>

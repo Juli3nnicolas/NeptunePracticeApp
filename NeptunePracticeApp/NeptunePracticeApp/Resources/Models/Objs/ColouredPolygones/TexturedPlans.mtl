@@ -9,7 +9,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\Julien\\Documents\\Julien\\Projects\\NeptunePracticeApp\\NeptunePracticeApp\\NeptunePracticeApp\\Resources\\Textures\\Square4.png
+map_Kd Square4.png
 
 newmtl Material.002
 Ns 96.078431
@@ -19,7 +19,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\Julien\\Documents\\Julien\\Projects\\NeptunePracticeApp\\NeptunePracticeApp\\NeptunePracticeApp\\Resources\\Textures\\Square3.png
+map_Kd Square3.png
 
 newmtl Material.003
 Ns 96.078431
@@ -29,7 +29,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\Julien\\Documents\\Julien\\Projects\\NeptunePracticeApp\\NeptunePracticeApp\\NeptunePracticeApp\\Resources\\Textures\\Square2.png
+map_Kd Square2.png
 
 newmtl Material.004
 Ns 96.078431
@@ -39,4 +39,4 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\Julien\\Documents\\Julien\\Projects\\NeptunePracticeApp\\NeptunePracticeApp\\NeptunePracticeApp\\Resources\\Textures\\Square1.png
+map_Kd Square1.png
