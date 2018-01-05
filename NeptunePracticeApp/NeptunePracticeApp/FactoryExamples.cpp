@@ -14,6 +14,8 @@
 #include "Camera/Controller/TempFPSCameraController.h"
 #include "Graphics/AmbientLight.h"
 
+#include "Profiling/Chrono.h"
+
 using namespace Neptune;
 
 void FactoryExamples::ViewRows()
@@ -91,9 +93,13 @@ void FactoryExamples::Display100PLYModels()
 
 	// Create views
 
-	Color color {1.0f, 1.0f, 0.0f, 1.0f};
-	ModelFactory  factory("Resources/Models/xwing.ply");
-	
+	NEP_PROFILING_CHRONO_INIT;
+	NEP_PROFILING_CHRONO_START;
+		Color color {1.0f, 1.0f, 0.0f, 1.0f};
+		ModelFactory  factory("Resources/Models/xwing.ply");
+	double t = NEP_PROFILING_CHRONO_STOP;
+	NEP_LOG("Loading time %f", t);
+
 	const u32 NB_VIEWS = 100;
 	View* view_table[NB_VIEWS] = {nullptr}; 
 

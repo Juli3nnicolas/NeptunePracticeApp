@@ -32,38 +32,14 @@
 #include "FactoryExamples.h"
 #include "ViewSpawnerExamples.h"
 
+#include "Mandelbrot.h"
+
+#include "Debug/NeptuneDebug.h"
+
 using namespace Neptune;
 
-extern "C" 
+void MultiTexturedModelExample()
 {
-	typedef struct TextureIndex_t{
-		s32 m_vertexIndex;
-		s32 m_textureBindingPoint;
-	} TextureIndex; 
-
-	const u8 NB_MAX_TEXTURES = 13;
-	static TextureIndex texture_binding_index_array[NB_MAX_TEXTURES] = {
-		{	3947,	0	},
-		{	5075,	3	},
-		{	5921,	0	},
-		{	6698,	2	},
-		{	10328,	0	},
-		{	14924,	0	},
-		{	18560,	1	},
-		{	19568,	3	},
-		{	33452,	1	},
-		{	36332,	3	},
-		{	37109,	2	},
-		{	46199,	0	},
-		{	51893,	0	}
-	};
-}
-
-void ModelTest()
-{
-	//FactoryExamples::Display100PLYModels();
-	//ViewSpawnerExamples::Display100Cubes();
-	
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
 	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",WIDTH, HEIGHT);
@@ -82,70 +58,29 @@ void ModelTest()
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// PGM SET UP
 
-	std::string vertexShaderName   = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/MultiTexturedDisplay.vert";//Display.vert";//DiffuseLight.vert";
-	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/ApplyTexture.frag";//PassThrough.frag";
+	// Texture-based display
+	std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/MultiTexturedDisplay.vert";
+	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/ApplyTexture.frag";
 	
 	Shader vert(vertexShaderName.c_str(),GL_VERTEX_SHADER);
 	Shader frag(fragmentShaderName.c_str(),GL_FRAGMENT_SHADER);
 
-	GraphicsProgram pgm("DiffuseLight");
+	GraphicsProgram pgm("MultiTexturedModel");
 	const auto PGM_NAME = pgm.getName();
 	pgm.add(vert.getId());
 	pgm.add(frag.getId());
-
-
-	// Uniforms
-	float diffuse_light_dir[3] = {-1.0f, -2.0f, 1.0f};
-	GraphicsProgram::UniformVarInput diffuse_light_dir_uni("DiffuseLightDirection",
-		GraphicsProgram::FLOAT,
-		3,
-		1,
-		3*sizeof(float),
-		diffuse_light_dir);
-
-	float diffuse_light_color[3] = {1.0f, 1.0f, 1.0f};
-	GraphicsProgram::UniformVarInput diffuse_light_color_uni("DiffuseLightColor",
-		GraphicsProgram::FLOAT,
-		3,
-		1,
-		3*sizeof(float),
-		diffuse_light_color);
-
-	size_t binding_array_size = sizeof(texture_binding_index_array);
-	GraphicsProgram::UniformVarInput texture_binding_index_array_uni(NEP_UNIVNAME_TEXTURE_BINDING_INDEX_ARRAY,
-		GraphicsProgram::S32,
-		NB_MAX_TEXTURES*2,
-		1,
-		binding_array_size,
-		texture_binding_index_array);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Create views
 	Color color {1.0f, 1.0f, 0.0f, 1.0f};
-	const char LOW_POLY_TREE[]	= "Resources/Models/LowPolyTree.ply";								// works
-	const char CUBE[]			= "Resources/Models/ColoredCube.ply";								// works
-	const char OBJ_CUBE[]		= "Resources/Models/Objs/ColouredCube/ColouredCube.obj";			// works
-	const char POLYGONES[]		= "Resources/Models/Objs/ColouredPolygones/ColouredPolygones.obj";
 	const char PLANS[]			= "Resources/Models/Objs/ColouredPolygones/TexturedPlans.obj";
-	const char XWING[]			= "Resources/Models/xwing.ply";										// works
-	const char SONIC_PLY[]		= "Resources/Models/DIrtySonicPainting.ply";						// works
 	const char CLASSIC_SONIC[]	= "Resources/Models/ClassicSonic/ClassicSonic.DAE";
 	const char SONIC_OBJ[]		= "Resources/Models/Objs/Sonic/sonic-the-hedgehog.obj";
-	const char SONIC[]			= "Resources/Models/Objs/Sonic/Sonic.obj";
-	const char SONIC_BLENDER[]	= "Resources/Models/Objs/Sonic/SonicBlender1.obj";
-	const char TEAPOT[]			= "Resources/Models/Objs/Teapot.obj";								// works
-	const char NISSAN_370Z[]	= "Resources/Models/Objs/370zobj/370.obj";	
-	const char RIDER[]			= "Resources/Models/Objs/Rider/OBJ/Rider.obj";
-	//ModelSpawner factory(&pgm, CUBE);
-	//ModelSpawner factory(&pgm, OBJ_CUBE);
-	//ModelSpawner factory(&pgm, POLYGONES);
-	//ModelSpawner factory(&pgm, SONIC_OBJ);
-	//ModelSpawner factory(&pgm, PLANS);
-	ModelSpawner factory(&pgm, CLASSIC_SONIC);
-	//ModelSpawner factory(&pgm, NISSAN_370Z);
-	//ModelSpawner factory(&pgm, RIDER);
-
+	
+	ModelSpawner factory(&pgm, SONIC_OBJ);			
+	//ModelSpawner factory(&pgm, PLANS);		 
+	//ModelSpawner factory(&pgm, CLASSIC_SONIC); 
 
 	////////////////////////// DEBUG
 
@@ -166,16 +101,23 @@ void ModelTest()
 		auto& texture = textures.back();
 		texture.setIndex(binding.second);
 		texture.init();
-
-		//factory.setTexture(PGM_NAME, &texture);
 	}
-
-	std::vector<u32> texture_map;
-	factory.generateTextureBindingTable(texture_map);
-	texture_binding_index_array_uni.setData(texture_map.data());
 
 	for (auto& t : textures)
 		factory.setTexture(PGM_NAME, &t);
+
+	static std::vector<u32> texture_map;
+	factory.mapVerticesToTextureBindingPoints(texture_map);
+
+	const u8 NB_MAX_TEXTURE_BINDING_POINTS = 13; // Max texture binding points supported by shader.
+	NEP_ASSERT(NB_MAX_TEXTURE_BINDING_POINTS * 2 >= texture_map.size());
+
+	GraphicsProgram::UniformVarInput texture_binding_index_array_uni(NEP_UNIVNAME_TEXTURE_BINDING_INDEX_ARRAY,
+		GraphicsProgram::S32,
+		NB_MAX_TEXTURE_BINDING_POINTS * 2,		// Each binding point goes with a vertex id, hence the multiplication
+		1,										// An array, not a vector nor a matrix
+		texture_map.size()*sizeof(texture_map[0]),
+		texture_map.data());
 
 	/////////
 
@@ -193,8 +135,8 @@ void ModelTest()
 	//factory.addUniformVariable(PGM_NAME, diffuse_light_color_uni);
 	factory.addUniformVariable(PGM_NAME, texture_binding_index_array_uni);
 
-	/*
-	Texture texture1("Resources/Models/Objs/Sonic/64124be4.jpg");
+	
+	/*Texture texture1("Resources/Models/Objs/Sonic/64124be4.jpg");
 	//Texture texture1("Resources/Textures/Square1.png");
 	texture1.setIndex(0);
 	texture1.init();
@@ -209,8 +151,8 @@ void ModelTest()
 	Texture texture4("Resources/Models/Objs/Sonic/f1f6d3cb.jpg");
 	//Texture texture4("Resources/Textures/Square4.png");
 	texture4.setIndex(3);
-	texture4.init();
-	*/
+	texture4.init();*/
+	
 
 	/*factory.setTexture(PGM_NAME, &texture1);
 	factory.setTexture(PGM_NAME, &texture2);
@@ -278,7 +220,9 @@ void ModelTest()
 
 int main(int argc, char* argv[])
 {
-	ModelTest();
+	MultiTexturedModelExample();
+	//Mandelbrot::MandelbrotExample();
+	//FactoryExamples::Display100PLYModels();
 
 	return 0;
 }
