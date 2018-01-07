@@ -78,7 +78,7 @@ void FactoryExamples::Display100PLYModels()
 {
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",WIDTH, HEIGHT);
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display100PLYModels",WIDTH, HEIGHT);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
 	EventSystemInterface::StartUp();
 
@@ -118,8 +118,8 @@ void FactoryExamples::Display100PLYModels()
 		const float OFFSET = 2.0f;
 
 		view_table[i] = factory.create();
-		view_table[i]->init();
-		//view_table[i]->cloneInit(*view_table[0]);
+		//view_table[i]->init();
+		view_table[i]->cloneInit(*view_table[0]);
 		view_table[i]->getTransform().translate(0, 0.0f, i*OFFSET);
 
 		view_table[i]->bindToCamera(&camera);
