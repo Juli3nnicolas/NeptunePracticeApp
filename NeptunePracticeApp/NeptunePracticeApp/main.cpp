@@ -38,6 +38,44 @@
 
 using namespace Neptune;
 
+static void CreateAndMapTextures(const GraphicsProgram::ProgramName& _pgmName, ModelSpawner& _spawner, std::vector<Texture>& _textures)
+{
+	// Get texture binding points - VRAM index allocated for models' textures
+	std::unordered_map<std::string, u8> texture_bindings;
+	_spawner.getTextureBindingPoints(texture_bindings);		// Map of {texture name, texture binding point}
+
+	// Create textures and give them their binding points
+	for (const auto& binding : texture_bindings)
+	{
+		_textures.emplace_back(binding.first.c_str());
+		auto& texture = _textures.back();
+		texture.setIndex(binding.second);
+		texture.init();
+	}
+
+	// Tell the spawner to use the newly created textures with program _pgmName
+	for (auto& t : _textures)
+		_spawner.setTexture(_pgmName, &t);
+
+	// Create a map from models' vertices to texture-binding-points 
+	// so that the graphics program knows what texture to apply for every vertex.
+	std::vector<u32> texture_map;
+	_spawner.mapVerticesToTextureBindingPoints(texture_map);				// Sets a map of {last vertex index (to be used with), binding point}
+
+	const u8 NB_MAX_TEXTURE_BINDING_POINTS = 16;							// Max texture binding points supported by shader.
+	NEP_ASSERT(NB_MAX_TEXTURE_BINDING_POINTS * 2 >= texture_map.size());	// Each binding point goes with a vertex id, hence the multiplication
+
+	// Add the map as an uniform to the graphics program
+	GraphicsProgram::UniformVarInput texture_binding_index_array_uni(NEP_UNIVNAME_TEXTURE_BINDING_INDEX_ARRAY,
+		GraphicsProgram::U32,
+		NB_MAX_TEXTURE_BINDING_POINTS * 2,			// Each binding point goes with a vertex id, hence the multiplication
+		1,											// An array, not a vector (2,3) nor a matrix
+		texture_map.size()*sizeof(texture_map[0]),
+		texture_map.data());
+
+	_spawner.addUniformVariable(_pgmName, texture_binding_index_array_uni);
+}
+
 void MultiTexturedModelExample()
 {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,9 +98,8 @@ void MultiTexturedModelExample()
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// PGM SET UP
+	//	CREATE GRAPHICS PROGRAM
 
-	// Texture-based display
 	std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/MultiTexturedDisplay.vert";
 	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/ApplyTexture.frag";
 	
@@ -74,83 +111,48 @@ void MultiTexturedModelExample()
 	pgm.add(vert.getId());
 	pgm.add(frag.getId());
 
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// SET UP MODEL SPAWNER
 
-	// Create views
-	const char PLANS[]			= "Resources/Models/Objs/ColouredPolygones/TexturedPlans.obj";
-	const char CLASSIC_SONIC[]	= "Resources/Models/ClassicSonic/ClassicSonic.DAE";
-	const char SONIC_OBJ[]		= "Resources/Models/Objs/Sonic/sonic-the-hedgehog.obj";
+	// Set model paths
+	const char SONIC_OBJ[] = "Resources/Models/Objs/Sonic/sonic-the-hedgehog.obj";
 	
-	ModelSpawner factory(&pgm, SONIC_OBJ);			
-	//ModelSpawner factory(&pgm, PLANS);		 
-	//ModelSpawner factory(&pgm, CLASSIC_SONIC); 
+	// Load model
+	ModelSpawner spawner(&pgm, SONIC_OBJ);			
 
-	std::unordered_map<std::string, u8> texture_bindings;
-	factory.getTextureBindingPoints(texture_bindings);
+	// Tell the spawner to prepare common data for graphics programs
+	spawner.createVertexData();							// Get model's vertices ready
+	spawner.create2DTextureMapData();					// Get model's texture coordinates ready
 
+	// Map the data
+	spawner.mapVertexData(PGM_NAME, 0);					// Use vertex data in the graphics program
+	spawner.map2DTextureMapData(PGM_NAME, 1);			// Use 2D texture map coordinates with graphics program
+
+	// Set the spawner to send a world and projection matrix to the graphics program
+	spawner.useWorldAndProjectionMatrices(PGM_NAME);
+
+	// Add custom uniforms - Texture index table to be used for selecting the right texture to apply (ApplyTexture.frag)
 	std::vector<Texture> textures;
-	for (const auto& binding : texture_bindings )
-	{
-		textures.emplace_back(binding.first.c_str());
-		auto& texture = textures.back();
-		texture.setIndex(binding.second);
-		texture.init();
-	}
-
-	for (auto& t : textures)
-		factory.setTexture(PGM_NAME, &t);
-
-	std::vector<u32> texture_map;
-	factory.mapVerticesToTextureBindingPoints(texture_map);
-
-	const u8 NB_MAX_TEXTURE_BINDING_POINTS = 13; // Max texture binding points supported by shader.
-	NEP_ASSERT(NB_MAX_TEXTURE_BINDING_POINTS * 2 >= texture_map.size());
-
-	GraphicsProgram::UniformVarInput texture_binding_index_array_uni(NEP_UNIVNAME_TEXTURE_BINDING_INDEX_ARRAY,
-		GraphicsProgram::S32,
-		NB_MAX_TEXTURE_BINDING_POINTS * 2,		// Each binding point goes with a vertex id, hence the multiplication
-		1,										// An array, not a vector nor a matrix
-		texture_map.size()*sizeof(texture_map[0]),
-		texture_map.data());
+	CreateAndMapTextures(PGM_NAME, spawner, textures);
 
 
-	factory.createVertexData();
-	factory.create2DTextureMapData();
-	factory.mapVertexData(PGM_NAME, 0);
-	factory.map2DTextureMapData(PGM_NAME, 1);
-	factory.useWorldAndProjectionMatrices(PGM_NAME);
-	factory.addUniformVariable(PGM_NAME, texture_binding_index_array_uni);
+	////////////////////////////////////////////////////////////////////////////
+	// INSTANTIATE VIEW
 
-	const u32 NB_VIEWS = 1;
-	View* view_table[NB_VIEWS] = {nullptr}; 
+	View* view{nullptr}; 
+	view = spawner.create();
+	view->init();
+	view->getTransform().translate(0.0f, 0.0f, 4.0f);
+	view->getTransform().rotate(0.0f, 90.0f, 0.0f);
+	view->getTransform().scale(0.1f, 0.1f, 0.1f);
 
-	{
-		const float OFFSET = 2.0f;
-
-		view_table[0] = factory.create();
-		view_table[0]->init();
-		view_table[0]->getTransform().translate(0.0f, 0.0f, 4.0f);
-		view_table[0]->getTransform().rotate(0.0f, 90.0f, 0.0f);
-		view_table[0]->getTransform().scale(0.1f, 0.1f, 0.1f);
-
-		view_table[0]->bindToCamera(&camera);
-	}
-
-	for (u32 i = 1; i < NB_VIEWS; i++)
-	{
-		const float OFFSET = 2.0f;
-
-		view_table[i] = factory.create();
-		//view_table[i]->init();					// Instantiate new buffers for every view
-		view_table[i]->cloneInit(*view_table[0]);	// Share view[0] buffers
-		view_table[i]->getTransform().translate(0, 0.0f, i*OFFSET);
-		view_table[i]->getTransform().scale(0.1f, 0.1f, 0.1f);
+	view->bindToCamera(&camera);
 
 
-		view_table[i]->bindToCamera(&camera);
-	}
+	////////////////////////////////////////////////////////////////////////////
+	// MAIN LOOP
 
-	// main loop
 	float WHITE[4]		= {255.0f/255.0f,255.0f/255.0f,255.0f/255.0f,0.0f};
 	float SKY_BLUE[4]	= {0.0f,162.0f/255.0f,232.0f/255.0f,0.0f};
 	float BLACK[4]		= {0.0f, 0.0f, 0.0f, 0.0f};
@@ -160,20 +162,18 @@ void MultiTexturedModelExample()
 		DisplayDeviceInterface::ClearBuffers(background);
 
 		controller.update();
-		for (auto& v : view_table)
-		{	
-			v->getTransform().rotate(0.0f, 1.0f, 0.0f);
-			v->update();
-		}
+		view->getTransform().rotate(0.0f, 1.0f, 0.0f);
+		view->update();
 
 		DisplayDeviceInterface::SwapBuffer(window);
 	}
 
-	for (u32 i = 0; i < NB_VIEWS; i++)
-	{
-		view_table[i]->terminate();
-		delete view_table[i];
-	}
+
+	////////////////////////////////////////////////////////////////////////////
+	// CLEAN UP
+
+	view->terminate();
+	delete view;
 
 	DisplayDeviceInterface::DestroyWindow(window);
 	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
@@ -182,9 +182,9 @@ void MultiTexturedModelExample()
 
 int main(int argc, char* argv[])
 {
-	//MultiTexturedModelExample();
+	MultiTexturedModelExample();
 	//Mandelbrot::MandelbrotExample();
-	FactoryExamples::Display100PLYModels();
+	//FactoryExamples::Display100PLYModels();
 
 	return 0;
 }
