@@ -294,18 +294,15 @@ static void CreateAndMapTextures(const GraphicsProgram::ProgramName& _pgmName, M
 	// Create a map from models' vertices to texture-binding-points 
 	// so that the graphics program knows what texture to apply for every vertex.
 	std::vector<u32> texture_map;
-	_spawner.mapVerticesToTextureBindingPoints(texture_map);				// Sets a map of {last vertex index (to be used with), binding point}
-
-	const u8 NB_MAX_TEXTURE_BINDING_POINTS = 16;							// Max texture binding points supported by shader.
-	NEP_ASSERT(NB_MAX_TEXTURE_BINDING_POINTS * 2 >= texture_map.size());	// Each binding point goes with a vertex id, hence the multiplication
+	_spawner.mapVerticesToTextureBindingPoints(texture_map);								// Sets a map of {last vertex index (to be used with), binding point}
 
 	// Add the map as an uniform to the graphics program
-	GraphicsProgram::UniformVarInput texture_binding_index_array_uni(NEP_UNIVNAME_TEXTURE_BINDING_INDEX_ARRAY,
+	GraphicsProgram::UniformVarInput texture_binding_index_array_uni(NEP_UNIVNAME_VERTICES_TO_TEXTURE_BINDING_POINT_MAP,
 		GraphicsProgram::U32,
-		NB_MAX_TEXTURE_BINDING_POINTS * 2,			// Each binding point goes with a vertex id, hence the multiplication
+		texture_map.size(),							// Number of values
 		1,											// An array, not a vector (2,3) nor a matrix
-		texture_map.size()*sizeof(texture_map[0]),
-		texture_map.data());
+		texture_map.size()*sizeof(texture_map[0]),	// Data size
+		texture_map.data());						// Data
 
 	_spawner.addUniformVariable(_pgmName, texture_binding_index_array_uni);
 }
