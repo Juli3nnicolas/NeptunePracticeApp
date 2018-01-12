@@ -62,7 +62,7 @@ void Mandelbrot::MandelbrotExample()
 	//spawner.setWorldPosition({0.0f, 0.0f, 0.0f});
 	spawner.mapVertexData(PGM_NAME, 0);
 	spawner.mapColorData(PGM_NAME, 1);
-	spawner.useWorldAndProjectionMatrices(PGM_NAME);
+	spawner.useModelViewAndProjectionMatrices(PGM_NAME);
 	spawner.addUniformVariable(PGM_NAME,current_time_uni);
 
 	// Create a view
