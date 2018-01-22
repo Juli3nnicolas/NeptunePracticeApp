@@ -13,6 +13,7 @@
 #include "Graphics/UniformVarNames.h"
 #include "Graphics/Texture.h"
 
+#include "Math/Vectors/Mat4x4.h"
 #include "Physics/Mechanics/Position.h"
 
 #include "Input/EventSystemInterface.h"
@@ -20,12 +21,14 @@
 #include "Camera/Controller/TempFPSCameraController.h"
 
 #include "Debug/NeptuneDebug.h"
+#include "Profiling/Chrono.h"
 
 #include <string>
 #include <chrono>
 #include <ratio>
 #include <ctime>
 
+#include "Math/Vectors/Vec4.h"
 
 using namespace Neptune;
 
@@ -107,7 +110,7 @@ void ViewSpawnerExamples::TimeControledTriangleColor()
 
 void ViewSpawnerExamples::ModelViewMatrix()
 {
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",1024,768);
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("ModelViewMatrix",1024,768);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
 	
 	// Creates the graphics programs for the ViewSpawner
@@ -129,7 +132,7 @@ void ViewSpawnerExamples::ModelViewMatrix()
 	spawner.setWorldPosition({-0.5f, -0.5f, 0.0f});
 	spawner.mapVertexData(PGM_NAME, 0);
 	spawner.mapColorData(PGM_NAME, 1);
-	spawner.useWorldAndProjectionMatrices(PGM_NAME);
+	spawner.useModelViewAndProjectionMatrices(PGM_NAME);
 
 	// Create a view
 	View* view = spawner.create();
@@ -156,9 +159,11 @@ void ViewSpawnerExamples::ModelViewMatrix()
 
 void ViewSpawnerExamples::Display100Cubes()
 {
+	NEP_PROFILING_CHRONO_INIT;
+
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",WIDTH, HEIGHT);
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display100Cubes",WIDTH, HEIGHT);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
 	EventSystemInterface::StartUp();
 
@@ -187,7 +192,7 @@ void ViewSpawnerExamples::Display100Cubes()
 
 
 	// Uniforms
-	float diffuse_light_dir[3] = {-1.0f, -2.0f, 1.0f};
+	float diffuse_light_dir[3] = {0.0f, 1.0f, 1.0f};
 	GraphicsProgram::UniformVarInput diffuse_light_dir_uni("DiffuseLightDirection",
 		GraphicsProgram::FLOAT,
 		3,
@@ -203,6 +208,13 @@ void ViewSpawnerExamples::Display100Cubes()
 		3*sizeof(float),
 		diffuse_light_color);
 
+	Mat4 World;
+	GraphicsProgram::UniformVarInput world_matrix_uni("World",
+		GraphicsProgram::FLOAT,
+		4,
+		4,
+		16 * sizeof(float),
+		World.getPtr());
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -215,22 +227,18 @@ void ViewSpawnerExamples::Display100Cubes()
 	factory.mapVertexData(PGM_NAME, 0);
 	factory.mapColorData(PGM_NAME, 1);
 	factory.mapNormalData(PGM_NAME, 2);
-	factory.useWorldAndProjectionMatrices(PGM_NAME);
+	factory.useModelViewAndProjectionMatrices(PGM_NAME);
 	factory.addUniformVariable(PGM_NAME, diffuse_light_dir_uni);
 	factory.addUniformVariable(PGM_NAME, diffuse_light_color_uni);
+	factory.addUniformVariable(PGM_NAME, world_matrix_uni);
 
-	const u32 NB_VIEWS = 100;
+
+	const u32 NB_VIEWS = 3;
 	View* view_table[NB_VIEWS] = {nullptr}; 
-
-	{
-		const float OFFSET = 2.0f;
-
-		view_table[0] = factory.create();
-		view_table[0]->init();
-		view_table[0]->getTransform().translate(0, 0.0f, 0);
-
-		view_table[0]->bindToCamera(&camera);
-	}
+	view_table[0] = factory.create();
+	view_table[0]->init();
+	view_table[0]->getTransform().translate(0.0f, 0.0f, 0.0f);
+	view_table[0]->bindToCamera(&camera);
 
 	for (u32 i = 1; i < NB_VIEWS; i++)
 	{
@@ -245,6 +253,9 @@ void ViewSpawnerExamples::Display100Cubes()
 	}
 
 	// main loop
+	Vec4 light_source(diffuse_light_dir[0], diffuse_light_dir[1], diffuse_light_dir[2], 0);
+	Transform rot;
+
 	float WHITE[4] = {255.0f/255.0f,255.0f/255.0f,255.0f/255.0f,0.0f};
 	float BLACK[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	float* background = BLACK;
@@ -254,7 +265,16 @@ void ViewSpawnerExamples::Display100Cubes()
 
 		controller.update();
 		for (auto& v : view_table)
-		{	v->getTransform().rotate(0.0f, 1.0f, 0.0f);
+		{	
+			v->getTransform().rotate(0.0f, 1.0f, 0.0f);
+
+			// Rotate light source
+			//rot.rotate(0.0f, 1.0f, 0.0f);
+			//Vec4 rot_light = rot.getMatrix() * light_source;
+			//auto light = pgm.getUniformVar("DiffuseLightDirection");
+			//light->second.setData(rot_light.getPtr());
+
+			v->updateUniform("World", v->getTransform().getDataPtr());
 			v->update();
 		}
 
@@ -361,7 +381,7 @@ void ViewSpawnerExamples::MultiTexturedModelExample()
 	spawner.map2DTextureMapData(PGM_NAME, 1);			// Use 2D texture map coordinates with graphics program
 
 	// Set the spawner to send a world and projection matrix to the graphics program
-	spawner.useWorldAndProjectionMatrices(PGM_NAME);
+	spawner.useModelViewAndProjectionMatrices(PGM_NAME);
 
 	// Add custom uniforms - Texture index table to be used for selecting the right texture to apply (ApplyTexture.frag)
 	std::vector<Texture> textures;
@@ -394,6 +414,146 @@ void ViewSpawnerExamples::MultiTexturedModelExample()
 
 		controller.update();
 		view->getTransform().rotate(0.0f, 1.0f, 0.0f);
+		view->update();
+
+		DisplayDeviceInterface::SwapBuffer(window);
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////
+	// CLEAN UP
+
+	view->terminate();
+	delete view;
+
+	DisplayDeviceInterface::DestroyWindow(window);
+	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
+	EventSystemInterface::ShutDown();
+}
+
+void ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample()
+{
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// APPLICATION SET TUP
+
+	const u32 WIDTH = 1024, HEIGHT = 768;
+
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("MultiTexturedModelWithSimpleLightingExample", WIDTH, HEIGHT);
+	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window, 3, 4);
+	EventSystemInterface::StartUp();
+
+	// Set camera location
+	Camera camera;												// Pos = (0,0,0)
+	camera.translate(0.0f, 0.0f, -8.0f);						// Step back from 8 units
+	camera.setScreenRatio(static_cast<float>(WIDTH) / HEIGHT);
+
+	// Set camera controller
+	TempFPSCameraController controller(&camera);
+	controller.init();
+
+	// Uniforms
+	float diffuse_light_dir[3] = { 0.0f, 0.0f, 1.0f };
+	GraphicsProgram::UniformVarInput diffuse_light_dir_uni("DiffuseLightDirection",
+		GraphicsProgram::FLOAT,
+		3,
+		1,
+		3 * sizeof(float),
+		diffuse_light_dir);
+
+	float diffuse_light_color[3] = { 1.0f, 1.0f, 1.0f };
+	GraphicsProgram::UniformVarInput diffuse_light_color_uni("DiffuseLightColor",
+		GraphicsProgram::FLOAT,
+		3,
+		1,
+		3 * sizeof(float),
+		diffuse_light_color);
+
+	Mat4 World;
+	GraphicsProgram::UniformVarInput world_matrix_uni("World",
+		GraphicsProgram::FLOAT,
+		4,
+		4,
+		16 * sizeof(float),
+		World.getPtr());
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//	CREATE GRAPHICS PROGRAM
+
+	std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/MultiTexturedDisplayWithLight.vert";
+	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/ApplyTextureWithLight.frag";
+
+	Shader vert(vertexShaderName.c_str(), GL_VERTEX_SHADER);
+	Shader frag(fragmentShaderName.c_str(), GL_FRAGMENT_SHADER);
+
+	GraphicsProgram pgm("MultiTexturedModelWithLight");
+	const auto PGM_NAME = pgm.getName();
+	pgm.add(vert.getId());
+	pgm.add(frag.getId());
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// SET UP MODEL SPAWNER
+
+	// Set model paths
+	const char SONIC_OBJ[] = "Resources/Models/Objs/Sonic/sonic-the-hedgehog.obj";
+	const char CLASSIC_SONIC[] = "Resources/Models/ClassicSonic/ClassicSonic.DAE";
+
+	// Load model
+	ModelSpawner spawner(&pgm, SONIC_OBJ);
+
+	// Tell the spawner to prepare common data for graphics programs
+	spawner.createVertexData();							// Get model's vertices ready
+	spawner.create2DTextureMapData();					// Get model's texture coordinates ready
+	spawner.createNormalData();							// Get model's normal data ready
+
+	// Map the data
+	spawner.mapVertexData(PGM_NAME, 0);					// Use vertex data in the graphics program
+	spawner.map2DTextureMapData(PGM_NAME, 1);			// Use 2D texture map coordinates with graphics program
+	spawner.mapNormalData(PGM_NAME, 2);					// Use normal data with graphics program
+
+	// Set the spawner to send a world and projection matrix to the graphics program
+	spawner.useModelViewAndProjectionMatrices(PGM_NAME);
+
+	// Add lighting-related uniforms
+	spawner.addUniformVariable(PGM_NAME, diffuse_light_dir_uni);
+	spawner.addUniformVariable(PGM_NAME, diffuse_light_color_uni);
+	spawner.addUniformVariable(PGM_NAME, world_matrix_uni);
+
+	// Add custom uniforms - Texture index table to be used for selecting the right texture to apply (ApplyTexture.frag)
+	std::vector<Texture> textures;
+	CreateAndMapTextures(PGM_NAME, spawner, textures);
+
+
+	////////////////////////////////////////////////////////////////////////////
+	// INSTANTIATE VIEW
+
+	View* view{ nullptr };
+	view = spawner.create();
+	view->init();
+	view->getTransform().translate(0.0f, 0.0f, 4.0f);
+	view->getTransform().rotate(0.0f, 90.0f, 0.0f);
+	view->getTransform().scale(0.1f, 0.1f, 0.1f);
+
+	view->bindToCamera(&camera);
+
+
+	////////////////////////////////////////////////////////////////////////////
+	// MAIN LOOP
+
+	float WHITE[4] = { 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 0.0f };
+	float SKY_BLUE[4] = { 0.0f, 162.0f / 255.0f, 232.0f / 255.0f, 0.0f };
+	float BLACK[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float* background = BLACK;
+	while (true)
+	{
+		DisplayDeviceInterface::ClearBuffers(background);
+
+		controller.update();
+		view->getTransform().rotate(0.0f, 1.0f, 0.0f);
+
+		view->updateUniform("World", view->getTransform().getDataPtr());
+
 		view->update();
 
 		DisplayDeviceInterface::SwapBuffer(window);
