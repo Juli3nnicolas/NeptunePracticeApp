@@ -480,8 +480,11 @@ void ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample()
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//	CREATE GRAPHICS PROGRAM
 
-	std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/MultiTexturedDisplayWithLight.vert";
-	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/ApplyTextureWithLight.frag";
+	//std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/MultiTexturedDisplayWithLight.vert";
+	//std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/ApplyTextureWithLight.frag";
+
+	std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/PhongLighting.vert";
+	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/PhongLighting.frag";
 
 	Shader vert(vertexShaderName.c_str(), GL_VERTEX_SHADER);
 	Shader frag(fragmentShaderName.c_str(), GL_FRAGMENT_SHADER);
