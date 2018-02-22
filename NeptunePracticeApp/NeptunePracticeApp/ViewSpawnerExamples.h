@@ -7,5 +7,6 @@ namespace ViewSpawnerExamples
 	void Display100Cubes();
 	void MultiTexturedModelExample();
 	void MultiTexturedModelWithSimpleLightingExample();
+	void SceneExample1();
 }
 

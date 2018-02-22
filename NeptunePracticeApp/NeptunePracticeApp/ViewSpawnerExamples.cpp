@@ -1,6 +1,7 @@
 #include "ViewSpawnerExamples.h"
 #include "Graphics/DisplayDeviceInterface.h"
 
+#include "Graphics/Spawners/PlanSpawner.h"
 #include "Graphics/Spawners/TriangleSpawner.h"
 #include "Graphics/Spawners/CubeSpawner.h"
 #include "Graphics/Spawners/ModelSpawner.h"
@@ -444,7 +445,7 @@ void ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample()
 
 	// Set camera location
 	Camera camera;												// Pos = (0,0,0)
-	camera.translate(0.0f, 0.0f, -8.0f);						// Step back from 8 units
+	camera.translate(0.0f, 2.0f, -3.0f);						// Step back from 3 units and move up from 2
 	camera.setScreenRatio(static_cast<float>(WIDTH) / HEIGHT);
 
 	// Set camera controller
@@ -558,6 +559,214 @@ void ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample()
 		view->updateUniform("World", view->getTransform().getDataPtr());
 
 		view->update();
+
+		DisplayDeviceInterface::SwapBuffer(window);
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////
+	// CLEAN UP
+
+	view->terminate();
+	delete view;
+
+	DisplayDeviceInterface::DestroyWindow(window);
+	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
+	EventSystemInterface::ShutDown();
+}
+
+static void SpawnModel(GraphicsProgram& _pgm, const char* _modelPath, u32 _amount,
+	const GraphicsProgram::UniformVarInput& diffuse_light_dir_uni,
+	const GraphicsProgram::UniformVarInput& diffuse_light_color_uni,
+	const GraphicsProgram::UniformVarInput& world_matrix_uni,
+	std::vector<View*>& _outViews,
+	std::vector<Texture>& _outTextures)
+{
+	ModelSpawner spawner(&_pgm, _modelPath);
+
+	// Tell the spawner to prepare common data for graphics programs
+	spawner.createVertexData();							// Get model's vertices ready
+	spawner.create2DTextureMapData();					// Get model's texture coordinates ready
+	spawner.createNormalData();							// Get model's normal data ready
+
+	// Map the data
+	const GraphicsProgram::ProgramName PGM_NAME = _pgm.getName();
+	spawner.mapVertexData(PGM_NAME, 0);					// Use vertex data in the graphics program
+	spawner.map2DTextureMapData(PGM_NAME, 1);			// Use 2D texture map coordinates with graphics program
+	spawner.mapNormalData(PGM_NAME, 2);					// Use normal data with graphics program
+
+	// Set the spawner to send a world and projection matrix to the graphics program
+	spawner.useModelViewAndProjectionMatrices(PGM_NAME);
+
+	// Add lighting-related uniforms
+	spawner.addUniformVariable(PGM_NAME, diffuse_light_dir_uni);
+	spawner.addUniformVariable(PGM_NAME, diffuse_light_color_uni);
+	spawner.addUniformVariable(PGM_NAME, world_matrix_uni);
+
+	// Add custom uniforms - Texture index table to be used for selecting the right texture to apply (ApplyTexture.frag)
+	CreateAndMapTextures(PGM_NAME, spawner, _outTextures);
+
+	// Spawn views
+	for (u32 i = 0; i < _amount; i++)
+	{
+		Neptune::View* view = spawner.create();
+		view->init();
+		_outViews.push_back(view);
+	}
+}
+
+void ViewSpawnerExamples::SceneExample1()
+{
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// APPLICATION SET TUP
+
+	const u32 WIDTH = 1024, HEIGHT = 768;
+
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("SceneExample1", WIDTH, HEIGHT);
+	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window, 3, 4);
+	EventSystemInterface::StartUp();
+
+	// Set camera location
+	Camera camera;												// Pos = (0,0,0)
+	camera.translate(0.0f, 2.0f, -3.0f);						// Step back from 8 units
+	camera.rotate(10.0f, Vec3(1.0f, 0.0f, 0.0f));
+	camera.setScreenRatio(static_cast<float>(WIDTH) / HEIGHT);
+
+	// Set camera controller
+	TempFPSCameraController controller(&camera);
+	controller.init();
+
+	// Uniforms
+	float diffuse_light_dir[3] = { 1.0f, -1.0f, 0.0f };
+	GraphicsProgram::UniformVarInput diffuse_light_dir_uni("DiffuseLightDirection",
+		GraphicsProgram::FLOAT,
+		3,
+		1,
+		3 * sizeof(float),
+		diffuse_light_dir);
+
+	float diffuse_light_color[3] = { 1.0f, 1.0f, 1.0f };
+	GraphicsProgram::UniformVarInput diffuse_light_color_uni("DiffuseLightColor",
+		GraphicsProgram::FLOAT,
+		3,
+		1,
+		3 * sizeof(float),
+		diffuse_light_color);
+
+	Mat4 World;
+	GraphicsProgram::UniformVarInput world_matrix_uni("World",
+		GraphicsProgram::FLOAT,
+		4,
+		4,
+		16 * sizeof(float),
+		World.getPtr());
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//	CREATE GRAPHICS PROGRAM
+
+	//std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/MultiTexturedDisplayWithLight.vert";
+	//std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/ApplyTextureWithLight.frag";
+
+	std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/PhongLighting.vert";
+	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/PhongLighting.frag";
+
+	Shader vert(vertexShaderName.c_str(), GL_VERTEX_SHADER);
+	Shader frag(fragmentShaderName.c_str(), GL_FRAGMENT_SHADER);
+
+	GraphicsProgram pgm("MultiTexturedModelWithLight");
+	const auto PGM_NAME = pgm.getName();
+	pgm.add(vert.getId());
+	pgm.add(frag.getId());
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// SET UP MODEL SPAWNER
+
+	// Set model paths
+	const char SONIC_OBJ[] = "Resources/Models/Objs/Sonic/sonic-the-hedgehog.obj";
+	const char CLASSIC_SONIC[] = "Resources/Models/ClassicSonic/ClassicSonic.DAE";
+
+	// Resources
+
+	std::vector<View*> views;
+	std::vector<Texture> textures(50);
+
+	// Spawn sonic
+	SpawnModel(pgm, SONIC_OBJ, 1,
+		diffuse_light_dir_uni, diffuse_light_color_uni, world_matrix_uni,
+		views, textures
+		);
+
+	View* view = views[0];
+	view->getTransform().translate(0.0f, 0.0f, 4.0f);
+	view->getTransform().rotate(0.0f, 90.0f, 0.0f);
+	view->getTransform().scale(0.1f, 0.1f, 0.1f);
+	view->bindToCamera(&camera);
+
+	// Spawn the ground
+	Texture ground_texture("Resources/Textures/CheckboardHD.jpg");
+	ground_texture.init();
+
+	u32 ground_texture_table[32] = { 0 };
+	GraphicsProgram::UniformVarInput ground_texture_table_uni =
+	{
+		"VerticesToTextureBindingPointMap",
+		GraphicsProgram::U32,
+		32,
+		1,
+		32 * sizeof(float),
+		ground_texture_table
+	};
+
+	Shader ground_vert("../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/MultiTexturedDisplay.vert", GL_VERTEX_SHADER);
+	Shader ground_frag("../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/ApplyTexture.frag", GL_FRAGMENT_SHADER);
+	GraphicsProgram ground_pgm("Ground");
+	const auto GROUND_PGM_NAME = ground_pgm.getName();
+	ground_pgm.add(ground_vert.getId());
+	ground_pgm.add(ground_frag.getId());
+
+	PlanSpawner ground_spawner(&ground_pgm);
+	ground_spawner.createVertexData();
+	ground_spawner.create2DTextureMapData();
+
+	ground_spawner.mapVertexData(GROUND_PGM_NAME, 0);
+	ground_spawner.map2DTextureMapData(GROUND_PGM_NAME, 1);
+
+	ground_spawner.setTexture(GROUND_PGM_NAME, &ground_texture);
+
+	ground_spawner.useModelViewAndProjectionMatrices(GROUND_PGM_NAME);
+	ground_spawner.addUniformVariable(GROUND_PGM_NAME, ground_texture_table_uni);
+
+
+	View* ground = ground_spawner.create();
+	ground->init();
+	ground->bindToCamera(&camera);
+	ground->getTransform().translate(-25.0f, 0.0f, 25.0f);
+	ground->getTransform().rotate(90.0f, 0.0f, 0.0f);
+	ground->getTransform().scale(100.0f, 100.0f, 100.0f);
+
+	////////////////////////////////////////////////////////////////////////////
+	// MAIN LOOP
+
+	float WHITE[4] = { 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 0.0f };
+	float SKY_BLUE[4] = { 0.0f, 162.0f / 255.0f, 232.0f / 255.0f, 0.0f };
+	float BLACK[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float* background = SKY_BLUE;
+	while (true)
+	{
+		DisplayDeviceInterface::ClearBuffers(background);
+
+		controller.update();
+
+		ground->update();
+		for (View* v : views)
+		{
+			//view->getTransform().rotate(0.0f, 1.0f, 0.0f);
+
+			v->updateUniform("World", view->getTransform().getDataPtr());
+			v->update();
+		}
 
 		DisplayDeviceInterface::SwapBuffer(window);
 	}

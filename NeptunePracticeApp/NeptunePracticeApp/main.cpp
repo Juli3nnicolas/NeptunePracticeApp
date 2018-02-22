@@ -43,6 +43,7 @@ using namespace Neptune;
 int main(int argc, char* argv[])
 {
 	ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample();
+	//ViewSpawnerExamples::SceneExample1();
 	//ViewSpawnerExamples::MultiTexturedModelExample();
 	//ViewSpawnerExamples::Display100Cubes();
 	//Mandelbrot::MandelbrotExample();
