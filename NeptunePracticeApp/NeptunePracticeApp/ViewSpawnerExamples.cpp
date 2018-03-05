@@ -158,13 +158,105 @@ void ViewSpawnerExamples::ModelViewMatrix()
 	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
 }
 
-void ViewSpawnerExamples::Display100Cubes()
+void ViewSpawnerExamples::Display100XWings()
 {
-	NEP_PROFILING_CHRONO_INIT;
-
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display100Cubes",WIDTH, HEIGHT);
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display100XWings", WIDTH, HEIGHT);
+	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window, 3, 4);
+	EventSystemInterface::StartUp();
+
+	// Set camera location
+	Camera camera;							// Pos = (0,0,0)
+	camera.translate(0.0f, 1.0f, -5.0f);	// Step back from 5 units
+	camera.setScreenRatio(static_cast<float>(WIDTH) / HEIGHT);
+
+	// Set camera controller
+	TempFPSCameraController controller(&camera);
+	controller.init();
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// PGM SET UP
+
+	std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/Display.vert";
+	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/PassThrough.frag";
+
+	Shader vert(vertexShaderName.c_str(), GL_VERTEX_SHADER);
+	Shader frag(fragmentShaderName.c_str(), GL_FRAGMENT_SHADER);
+
+	GraphicsProgram pgm("Display100XWings");
+	const auto PGM_NAME = pgm.getName();
+	pgm.add(vert.getId());
+	pgm.add(frag.getId());
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Create views
+	NEP_PROFILING_CHRONO_INIT;
+	NEP_PROFILING_CHRONO_START;
+		Color color{ 1.0f, 1.0f, 0.0f, 1.0f };
+		ModelSpawner factory(&pgm, "Resources/Models/xwing.ply");
+	double t = NEP_PROFILING_CHRONO_STOP;
+	NEP_LOG("Loading time for first instance %f ms", t);
+
+	factory.createVertexData();
+	factory.createColorData(color);
+	factory.mapVertexData(PGM_NAME, 0);
+	factory.mapColorData(PGM_NAME, 1);
+	factory.useModelViewAndProjectionMatrices(PGM_NAME);
+
+	const u32 NB_VIEWS = 100;
+	View* view_table[NB_VIEWS] = { nullptr };
+	view_table[0] = factory.create();
+	view_table[0]->init();
+	view_table[0]->getTransform().translate(0.0f, 0.0f, 0.0f);
+	view_table[0]->bindToCamera(&camera);
+
+	for (u32 i = 1; i < NB_VIEWS; i++)
+	{
+		const float OFFSET = 2.0f;
+
+		view_table[i] = factory.create();
+		//view_table[i]->init();					// Instantiate new buffers for every view
+		view_table[i]->cloneInit(*view_table[0]);	// Share view[0] buffers
+		view_table[i]->getTransform().translate(0, 0.0f, i*OFFSET);
+
+		view_table[i]->bindToCamera(&camera);
+	}
+
+	// main loop
+	float WHITE[4] = { 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 0.0f };
+	float BLACK[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float* background = BLACK;
+	while (true)
+	{
+		DisplayDeviceInterface::ClearBuffers(background);
+
+		controller.update();
+		for (auto& v : view_table)
+		{
+			v->update();
+		}
+
+		DisplayDeviceInterface::SwapBuffer(window);
+	}
+
+	for (u32 i = 0; i < NB_VIEWS; i++)
+	{
+		view_table[i]->terminate();
+		delete view_table[i];
+	}
+
+	DisplayDeviceInterface::DestroyWindow(window);
+	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
+	EventSystemInterface::ShutDown();
+}
+
+void ViewSpawnerExamples::Display20Cubes()
+{
+	const u32 WIDTH = 1024, HEIGHT = 768;
+
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display20Cubes",WIDTH, HEIGHT);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
 	EventSystemInterface::StartUp();
 
@@ -234,7 +326,7 @@ void ViewSpawnerExamples::Display100Cubes()
 	factory.addUniformVariable(PGM_NAME, world_matrix_uni);
 
 
-	const u32 NB_VIEWS = 3;
+	const u32 NB_VIEWS = 20;
 	View* view_table[NB_VIEWS] = {nullptr}; 
 	view_table[0] = factory.create();
 	view_table[0]->init();
@@ -752,7 +844,8 @@ void ViewSpawnerExamples::SceneExample1()
 	float WHITE[4] = { 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 0.0f };
 	float SKY_BLUE[4] = { 0.0f, 162.0f / 255.0f, 232.0f / 255.0f, 0.0f };
 	float BLACK[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	float* background = SKY_BLUE;
+	float TWILIGHT[4] = { 224.0f / 255.0f, 152.0f / 255.0f, 72.0f / 255.0f, 0.0f };
+	float* background = TWILIGHT;
 	while (true)
 	{
 		DisplayDeviceInterface::ClearBuffers(background);

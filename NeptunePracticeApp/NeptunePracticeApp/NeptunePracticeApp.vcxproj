@@ -196,7 +196,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NEP_FINAL;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Neptune\Dependencies\All\Include;$(ProjectDir)..\..\..\Neptune\Dependencies\Win32\Include;$(ProjectDir)..\..\..\Neptune\Engine\Win32\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Win32\Core;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\Core;$(ProjectDir)Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -217,7 +217,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NEP_FINAL;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Neptune\Dependencies\All\Include;$(ProjectDir)..\..\..\Neptune\Dependencies\Win32\Include;$(ProjectDir)..\..\..\Neptune\Engine\Win32\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Win32\Core;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\HighLevel;$(ProjectDir)..\..\..\Neptune\Engine\Multiplatform\Core;$(ProjectDir)Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
