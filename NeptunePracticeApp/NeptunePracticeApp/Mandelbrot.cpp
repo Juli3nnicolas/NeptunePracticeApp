@@ -64,6 +64,7 @@ void Mandelbrot::MandelbrotExample()
 	spawner.mapColorData(PGM_NAME, 1);
 	spawner.useModelViewAndProjectionMatrices(PGM_NAME);
 	spawner.addUniformVariable(PGM_NAME,current_time_uni);
+	spawner.movePgmParameters();
 
 	// Create a view
 	View* view = spawner.create();

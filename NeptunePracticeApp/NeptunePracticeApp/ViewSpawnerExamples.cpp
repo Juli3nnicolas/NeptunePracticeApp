@@ -83,6 +83,7 @@ void ViewSpawnerExamples::TimeControledTriangleColor()
 	spawner.mapVertexData(PGM_NAME,0);
 	spawner.mapColorData(PGM_NAME,1);
 	spawner.addUniformVariable(PGM_NAME,current_time_uni);
+	spawner.movePgmParameters();
 
 	// Create a view
 	View* view = spawner.create();
@@ -134,6 +135,7 @@ void ViewSpawnerExamples::ModelViewMatrix()
 	spawner.mapVertexData(PGM_NAME, 0);
 	spawner.mapColorData(PGM_NAME, 1);
 	spawner.useModelViewAndProjectionMatrices(PGM_NAME);
+	spawner.movePgmParameters();
 
 	// Create a view
 	View* view = spawner.create();
@@ -204,6 +206,7 @@ void ViewSpawnerExamples::Display100XWings()
 	factory.mapVertexData(PGM_NAME, 0);
 	factory.mapColorData(PGM_NAME, 1);
 	factory.useModelViewAndProjectionMatrices(PGM_NAME);
+	factory.movePgmParameters();
 
 	const u32 NB_VIEWS = 100;
 	View* view_table[NB_VIEWS] = { nullptr };
@@ -324,6 +327,7 @@ void ViewSpawnerExamples::Display20Cubes()
 	factory.addUniformVariable(PGM_NAME, diffuse_light_dir_uni);
 	factory.addUniformVariable(PGM_NAME, diffuse_light_color_uni);
 	factory.addUniformVariable(PGM_NAME, world_matrix_uni);
+	factory.movePgmParameters();
 
 
 	const u32 NB_VIEWS = 20;
@@ -480,6 +484,9 @@ void ViewSpawnerExamples::MultiTexturedModelExample()
 	std::vector<Texture> textures;
 	CreateAndMapTextures(PGM_NAME, spawner, textures);
 
+	// Move program parameters from the spawner to the program
+	spawner.movePgmParameters();
+
 
 	////////////////////////////////////////////////////////////////////////////
 	// INSTANTIATE VIEW
@@ -620,6 +627,10 @@ void ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample()
 	std::vector<Texture> textures;
 	CreateAndMapTextures(PGM_NAME, spawner, textures);
 
+	// Move program parameters from the spawner to the program
+	spawner.movePgmParameters();
+
+
 
 	////////////////////////////////////////////////////////////////////////////
 	// INSTANTIATE VIEW
@@ -697,6 +708,9 @@ static void SpawnModel(GraphicsProgram& _pgm, const char* _modelPath, u32 _amoun
 
 	// Add custom uniforms - Texture index table to be used for selecting the right texture to apply (ApplyTexture.frag)
 	CreateAndMapTextures(PGM_NAME, spawner, _outTextures);
+
+	// Move parameters from the spawner to the model
+	spawner.movePgmParameters();
 
 	// Spawn views
 	for (u32 i = 0; i < _amount; i++)
@@ -829,6 +843,7 @@ void ViewSpawnerExamples::SceneExample1()
 
 	ground_spawner.useModelViewAndProjectionMatrices(GROUND_PGM_NAME);
 	ground_spawner.addUniformVariable(GROUND_PGM_NAME, ground_texture_table_uni);
+	ground_spawner.movePgmParameters();
 
 
 	View* ground = ground_spawner.create();
