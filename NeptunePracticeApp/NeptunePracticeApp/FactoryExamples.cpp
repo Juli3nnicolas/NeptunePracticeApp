@@ -98,7 +98,7 @@ void FactoryExamples::Display100PLYModels()
 		Color color {1.0f, 1.0f, 0.0f, 1.0f};
 		ModelFactory  factory("Resources/Models/xwing.ply");
 	double t = NEP_PROFILING_CHRONO_STOP;
-	NEP_LOG("Loading time %f", t);
+	NEP_LOG("Loading time for first instance %f ms", t);
 
 	const u32 NB_VIEWS = 100;
 	View* view_table[NB_VIEWS] = {nullptr}; 
