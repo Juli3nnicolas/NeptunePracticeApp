@@ -42,12 +42,12 @@ using namespace Neptune;
 
 int main(int argc, char* argv[])
 {
+	ViewSpawnerExamples::Display20Cubes();
+	FactoryExamples::Display100PLYModels();
+	ViewSpawnerExamples::Display100XWings();
 	ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample();
-	//ViewSpawnerExamples::SceneExample1();
-	//ViewSpawnerExamples::MultiTexturedModelExample();
-	//ViewSpawnerExamples::Display100Cubes();
-	//Mandelbrot::MandelbrotExample();
-	//FactoryExamples::Display100PLYModels();
+	ViewSpawnerExamples::SceneExample1();
+	Mandelbrot::MandelbrotExample();
 
 	return 0;
 }
