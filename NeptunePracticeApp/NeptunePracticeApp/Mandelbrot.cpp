@@ -30,7 +30,7 @@ namespace Mandelbrot
 
 void Mandelbrot::MandelbrotExample()
 {
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test",1280,760);
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Test", 1280, 760);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
 	
 	// Creates the graphics programs for the ViewSpawner

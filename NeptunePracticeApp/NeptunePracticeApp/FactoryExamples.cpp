@@ -78,7 +78,7 @@ void FactoryExamples::Display100PLYModels()
 {
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display100PLYModels",WIDTH, HEIGHT);
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display100PLYModels",WIDTH, HEIGHT, DisplayDeviceInterface::MULTI_SAMPLE_ANTI_ALLIASING::X16);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
 	EventSystemInterface::StartUp();
 

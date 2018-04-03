@@ -164,7 +164,7 @@ void ViewSpawnerExamples::Display100XWings()
 {
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display100XWings", WIDTH, HEIGHT);
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display100XWings", WIDTH, HEIGHT, DisplayDeviceInterface::MULTI_SAMPLE_ANTI_ALLIASING::X16);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window, 3, 4);
 	EventSystemInterface::StartUp();
 
@@ -259,7 +259,7 @@ void ViewSpawnerExamples::Display20Cubes()
 {
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display20Cubes",WIDTH, HEIGHT);
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("Display20Cubes",WIDTH, HEIGHT, DisplayDeviceInterface::MULTI_SAMPLE_ANTI_ALLIASING::X16);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window,3,4);
 	EventSystemInterface::StartUp();
 
@@ -538,7 +538,7 @@ void ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample()
 
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("MultiTexturedModelWithSimpleLightingExample", WIDTH, HEIGHT);
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("MultiTexturedModelWithSimpleLightingExample", WIDTH, HEIGHT, DisplayDeviceInterface::MULTI_SAMPLE_ANTI_ALLIASING::X16);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window, 3, 4);
 	EventSystemInterface::StartUp();
 
@@ -728,7 +728,7 @@ void ViewSpawnerExamples::SceneExample1()
 
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("SceneExample1", WIDTH, HEIGHT);
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("SceneExample1", WIDTH, HEIGHT, DisplayDeviceInterface::MULTI_SAMPLE_ANTI_ALLIASING::X16);
 	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window, 3, 4);
 	EventSystemInterface::StartUp();
 
