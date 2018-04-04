@@ -41,12 +41,12 @@ using namespace Neptune;
 
 int main(int argc, char* argv[])
 {
-	ViewSpawnerExamples::SkyBox();
 	ViewSpawnerExamples::Display20Cubes();
 	FactoryExamples::Display100PLYModels();
 	ViewSpawnerExamples::Display100XWings();
 	ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample();
 	ViewSpawnerExamples::SceneExample1();
+	ViewSpawnerExamples::SkyBox();
 	Mandelbrot::MandelbrotExample();
 
 	return 0;
