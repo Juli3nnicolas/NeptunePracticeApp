@@ -36,12 +36,12 @@
 
 #include "Debug/NeptuneDebug.h"
 
+
 using namespace Neptune;
-
-
 
 int main(int argc, char* argv[])
 {
+	ViewSpawnerExamples::SkyBox();
 	ViewSpawnerExamples::Display20Cubes();
 	FactoryExamples::Display100PLYModels();
 	ViewSpawnerExamples::Display100XWings();

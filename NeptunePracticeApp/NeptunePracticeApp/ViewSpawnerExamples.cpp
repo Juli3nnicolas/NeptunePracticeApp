@@ -890,3 +890,74 @@ void ViewSpawnerExamples::SceneExample1()
 	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
 	EventSystemInterface::ShutDown();
 }
+
+void ViewSpawnerExamples::SkyBox()
+{
+	const u32 WIDTH = 1024, HEIGHT = 768;
+
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("SkyBoxExample", WIDTH, HEIGHT, DisplayDeviceInterface::MULTI_SAMPLE_ANTI_ALLIASING::X16);
+	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window, 3, 4);
+	EventSystemInterface::StartUp();
+
+	// Set camera location
+	Camera camera;							// Pos = (0,0,0)
+	float screen_ratio = static_cast<float>(WIDTH) / HEIGHT;
+	camera.setScreenRatio(screen_ratio);
+	camera.setViewFrustum(45.0f, screen_ratio, 0.1f, 1500.0f);
+
+	// Set camera controller
+	TempFPSCameraController controller(&camera);
+	controller.init();
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// PGM SET UP
+
+	std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/SkyBox.vert";
+	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/SkyBox.frag";
+
+	Shader vert(vertexShaderName.c_str(), GL_VERTEX_SHADER);
+	Shader frag(fragmentShaderName.c_str(), GL_FRAGMENT_SHADER);
+
+	GraphicsProgram pgm("Skybox");
+	const auto PGM_NAME = pgm.getName();
+	pgm.add(vert.getId());
+	pgm.add(frag.getId());
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Create texture
+	Texture texture("Resources/Textures/SkyBox.ktx", Texture::Type::CUBE_MAP);
+	texture.init();
+
+	// Create views
+	CubeSpawner spawner(&pgm);
+	spawner.createVertexData();
+	spawner.mapVertexData(PGM_NAME, 0);
+	spawner.useModelViewAndProjectionMatrices(PGM_NAME);
+	spawner.setTexture(PGM_NAME, &texture);
+	spawner.movePgmParameters();
+
+	View* view = spawner.create();
+	view->init();
+	view->bindToCamera(&camera);
+	view->getTransform().scale(1000, 1000, 1000);
+
+	// main loop
+	float RED[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+	float* background = RED;
+	while (true)
+	{
+		DisplayDeviceInterface::ClearBuffers(background);
+
+		controller.update();
+		view->update();
+		DisplayDeviceInterface::SwapBuffer(window);
+	}
+
+	view->terminate();
+	delete view;
+
+	DisplayDeviceInterface::DestroyWindow(window);
+	DisplayDeviceInterface::DestroyGraphicalContext(ctxt);
+	EventSystemInterface::ShutDown();
+}

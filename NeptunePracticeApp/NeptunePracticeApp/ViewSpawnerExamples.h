@@ -9,5 +9,6 @@ namespace ViewSpawnerExamples
 	void MultiTexturedModelExample();
 	void MultiTexturedModelWithSimpleLightingExample();
 	void SceneExample1();
+	void SkyBox();
 }
 
