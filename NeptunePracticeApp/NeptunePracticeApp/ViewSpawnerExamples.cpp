@@ -31,6 +31,7 @@
 
 #include "Math/Vectors/Vec4.h"
 
+
 using namespace Neptune;
 
 std::chrono::high_resolution_clock::time_point s_t_start = std::chrono::high_resolution_clock::now();
@@ -531,15 +532,21 @@ void ViewSpawnerExamples::MultiTexturedModelExample()
 	EventSystemInterface::ShutDown();
 }
 
-void ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample()
+void ViewSpawnerExamples::XWing()
 {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// APPLICATION SET TUP
 
 	const u32 WIDTH = 1024, HEIGHT = 768;
 
-	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("MultiTexturedModelWithSimpleLightingExample", WIDTH, HEIGHT, DisplayDeviceInterface::MULTI_SAMPLE_ANTI_ALLIASING::X16);
-	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window, 3, 4);
+	DisplayDeviceInterface::OffScreenRenderingSettings settings;
+	settings.m_antiAliasing = DisplayDeviceInterface::MULTI_SAMPLE_ANTI_ALLIASING::X16;
+	settings.m_frameBufferHeight = HEIGHT;
+	settings.m_frameBufferWidth = WIDTH;
+	//settings.m_enableReversedZ = true;
+
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("XWing", WIDTH, HEIGHT);
+	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window, 3, 4, settings);
 	EventSystemInterface::StartUp();
 
 	// Set camera location
@@ -582,6 +589,146 @@ void ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample()
 
 	//std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/MultiTexturedDisplayWithLight.vert";
 	//std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/ApplyTextureWithLight.frag";
+
+	//std::string vertexShaderName   = /*"../../../Neptune/Engine/Multiplatform/Core/*/"Shaders/Vertex/PhongLightingNoMultiTexturing.vert";
+	//std::string fragmentShaderName = /*"../../../Neptune/Engine/Multiplatform/Core/*/"Shaders/Fragment/PhongLightingNoMultiTexturing.frag";
+
+	std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/PhongLightingNoMultiTexturing.vert";
+	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/PhongLightingNoMultiTexturing.frag";
+
+	Shader vert(vertexShaderName.c_str(), GL_VERTEX_SHADER);
+	Shader frag(fragmentShaderName.c_str(), GL_FRAGMENT_SHADER);
+
+	GraphicsProgram pgm("MultiTexturedModelWithLight");
+	const auto PGM_NAME = pgm.getName();
+	pgm.add(vert.getId());
+	pgm.add(frag.getId());
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// SET UP MODEL SPAWNER
+
+	// Set model paths
+	const char XWING[] = "Resources/Models/xwing.ply";
+
+	// Load model
+	ModelSpawner spawner(&pgm, XWING);
+
+	// Tell the spawner to prepare common data for graphics programs
+	spawner.createVertexData();							// Get model's vertices ready
+	spawner.createColorData({ 1, 0, 0, 1 });							// Get model's color data ready
+	spawner.createNormalData();							// Get model's normal data ready
+
+	// Map the data
+	spawner.mapVertexData(PGM_NAME, 0);					// Use vertex data in the graphics program
+	spawner.mapColorData(PGM_NAME, 1);					// Use colour data
+	spawner.mapNormalData(PGM_NAME, 2);					// Use normal data with graphics program
+
+	// Set the spawner to send a world and projection matrix to the graphics program
+	spawner.useModelViewAndProjectionMatrices(PGM_NAME);
+
+	// Add lighting-related uniforms
+	spawner.addUniformVariable(PGM_NAME, diffuse_light_dir_uni);
+	spawner.addUniformVariable(PGM_NAME, diffuse_light_color_uni);
+	spawner.addUniformVariable(PGM_NAME, world_matrix_uni);
+
+	// Move program parameters from the spawner to the program
+	spawner.movePgmParameters();
+
+
+
+	////////////////////////////////////////////////////////////////////////////
+	// INSTANTIATE VIEW
+
+	View* view{ nullptr };
+	view = spawner.create();
+	view->init();
+	view->getTransform().translate(0.0f, 2.0f, 0.0f);
+	view->getTransform().rotate(0.0f, 90.0f, 0.0f);
+	//view->getTransform().scale(0.1f, 0.1f, 0.1f);
+
+	view->bindToCamera(&camera);
+
+
+	////////////////////////////////////////////////////////////////////////////
+	// MAIN LOOP
+
+	float WHITE[4] = { 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 0.0f };
+	float SKY_BLUE[4] = { 0.0f, 162.0f / 255.0f, 232.0f / 255.0f, 0.0f };
+	float PURPLE[4] = { 0.5f, 0.0f, 0.5f, 0.0f };
+	float BLACK[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float* background = PURPLE;
+	while (true)
+	{
+		DisplayDeviceInterface::ClearBuffers(background);
+
+		controller.update();
+		view->getTransform().rotate(0.0f, 1.0f, 0.0f);
+
+		view->updateUniform("World", view->getTransform().getDataPtr());
+
+		view->update();
+
+		DisplayDeviceInterface::SwapBuffer(window);
+	}
+}
+
+void ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample()
+{
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// APPLICATION SET TUP
+
+	const u32 WIDTH = 1024, HEIGHT = 768;
+
+	DisplayDeviceInterface::OffScreenRenderingSettings settings;
+	settings.m_antiAliasing = DisplayDeviceInterface::MULTI_SAMPLE_ANTI_ALLIASING::X16;
+	settings.m_enableReversedZ = true;
+	settings.m_frameBufferHeight = HEIGHT;
+	settings.m_frameBufferWidth = WIDTH;
+
+	DisplayDeviceInterface::WindowHandle window = DisplayDeviceInterface::CreateWindow("MultiTexturedModelWithSimpleLightingExample", WIDTH, HEIGHT);
+	DisplayDeviceInterface::GraphicalContextHandle ctxt = DisplayDeviceInterface::CreateGraphicalContext(window, 3, 4, settings);
+
+	EventSystemInterface::StartUp();
+
+	// Set camera location
+	Camera camera;												// Pos = (0,0,0)
+	camera.translate(0.0f, 2.0f, -3.0f);						// Step back from 3 units and move up from 2
+	camera.setScreenRatio(static_cast<float>(WIDTH) / HEIGHT);
+	camera.updateProjection(Camera::ProjectionType::REVERSED_Z_PERSPECTIVE);
+
+	// Set camera controller
+	TempFPSCameraController controller(&camera);
+	controller.init();
+
+	// Uniforms
+	float diffuse_light_dir[3] = { 0.0f, 0.0f, 1.0f };
+	GraphicsProgram::UniformVarInput diffuse_light_dir_uni("DiffuseLightDirection",
+		GraphicsProgram::FLOAT,
+		3,
+		1,
+		3 * sizeof(float),
+		diffuse_light_dir);
+
+	float diffuse_light_color[3] = { 1.0f, 1.0f, 1.0f };
+	GraphicsProgram::UniformVarInput diffuse_light_color_uni("DiffuseLightColor",
+		GraphicsProgram::FLOAT,
+		3,
+		1,
+		3 * sizeof(float),
+		diffuse_light_color);
+
+	Mat4 World;
+	GraphicsProgram::UniformVarInput world_matrix_uni("World",
+		GraphicsProgram::FLOAT,
+		4,
+		4,
+		16 * sizeof(float),
+		World.getPtr());
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//	CREATE GRAPHICS PROGRAM
 
 	std::string vertexShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Vertex/PhongLighting.vert";
 	std::string fragmentShaderName = "../../../Neptune/Engine/Multiplatform/Core/Shaders/Fragment/PhongLighting.frag";
@@ -644,14 +791,14 @@ void ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample()
 
 	view->bindToCamera(&camera);
 
-
 	////////////////////////////////////////////////////////////////////////////
 	// MAIN LOOP
 
 	float WHITE[4] = { 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 0.0f };
 	float SKY_BLUE[4] = { 0.0f, 162.0f / 255.0f, 232.0f / 255.0f, 0.0f };
+	float PURPLE[4] = {0.5f, 0.0f , 0.5f, 0.0f};
 	float BLACK[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	float* background = BLACK;
+	float* background = PURPLE;
 	while (true)
 	{
 		DisplayDeviceInterface::ClearBuffers(background);

@@ -7,6 +7,7 @@ namespace ViewSpawnerExamples
 	void Display20Cubes();
 	void Display100XWings();
 	void MultiTexturedModelExample();
+	void XWing(); // Debug
 	void MultiTexturedModelWithSimpleLightingExample();
 	void SceneExample1();
 	void SkyBox();
