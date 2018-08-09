@@ -231,7 +231,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Classes\ExApp.cpp" />
     <ClCompile Include="FactoryExamples.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -242,6 +241,7 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mandelbrot.cpp" />
+    <ClCompile Include="SimpleAppExamples.cpp" />
     <ClCompile Include="ViewSpawnerExamples.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -250,7 +250,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Classes\ExApp.h" />
     <ClInclude Include="FactoryExamples.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -260,6 +259,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Mandelbrot.h" />
+    <ClInclude Include="SimpleAppExamples.h" />
     <ClInclude Include="ViewSpawnerExamples.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

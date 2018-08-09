@@ -31,6 +31,7 @@
 
 #include "FactoryExamples.h"
 #include "ViewSpawnerExamples.h"
+#include "SimpleAppExamples.h"
 
 #include "Mandelbrot.h"
 
@@ -45,7 +46,7 @@ int main(int argc, char* argv[])
 	//FactoryExamples::Display100PLYModels();
 	//ViewSpawnerExamples::Display100XWings();
 	//ViewSpawnerExamples::XWing();
-	ViewSpawnerExamples::MultiTexturedModelWithSimpleLightingExample();
+	SimpleAppExamples::MultiTexturedModelWithSimpleLightingExample();
 	ViewSpawnerExamples::SceneExample1();
 	ViewSpawnerExamples::SkyBox();
 	Mandelbrot::MandelbrotExample();
