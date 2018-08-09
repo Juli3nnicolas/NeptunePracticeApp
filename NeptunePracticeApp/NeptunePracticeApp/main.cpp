@@ -46,6 +46,7 @@ int main(int argc, char* argv[])
 	//FactoryExamples::Display100PLYModels();
 	//ViewSpawnerExamples::Display100XWings();
 	//ViewSpawnerExamples::XWing();
+	//SimpleAppExamples::ModelFactoryExample();
 	SimpleAppExamples::MultiTexturedModelWithSimpleLightingExample();
 	ViewSpawnerExamples::SceneExample1();
 	ViewSpawnerExamples::SkyBox();

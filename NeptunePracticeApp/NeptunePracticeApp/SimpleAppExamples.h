@@ -3,4 +3,5 @@
 namespace SimpleAppExamples
 {
 	void MultiTexturedModelWithSimpleLightingExample();
+	void ModelFactoryExample();
 }

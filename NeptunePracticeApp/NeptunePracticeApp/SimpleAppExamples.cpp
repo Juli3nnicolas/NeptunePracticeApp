@@ -8,6 +8,7 @@
 #include "Graphics/UniformVarNames.h"
 #include "Debug/NeptuneDebug.h"
 #include "Application/SimpleApp.h"
+#include "Graphics/Factories/ModelFactory.h"
 
 #include <string>
 
@@ -164,5 +165,21 @@ void SimpleAppExamples::MultiTexturedModelWithSimpleLightingExample()
 	);
 
 	// Main loop
+	app.loop();
+}
+
+void SimpleAppExamples::ModelFactoryExample()
+{
+	const u32 WIDTH = 1024;
+	const u32 HEIGHT = 768;
+
+	SimpleApp app(WIDTH, HEIGHT, "ModelFactoryExample");
+
+	ModelFactory factory("Resources/Models/xwing.ply");
+	View* v = factory.create();
+	v->init();
+	v->getTransform().translate(0.0f, 0.0f, 2.0f);
+	
+	app.add(v);
 	app.loop();
 }
