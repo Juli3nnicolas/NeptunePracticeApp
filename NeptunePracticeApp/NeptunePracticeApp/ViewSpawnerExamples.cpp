@@ -1087,7 +1087,7 @@ void ViewSpawnerExamples::SkyBox()
 	View* view = spawner.create();
 	view->init();
 	view->bindToCamera(&camera);
-	view->getTransform().scale(1000, 1000, 1000);
+	view->getTransform().scale(10, 10, 10);
 
 	// main loop
 	float RED[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
