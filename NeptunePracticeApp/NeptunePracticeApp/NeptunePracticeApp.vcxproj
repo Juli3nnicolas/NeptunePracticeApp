@@ -239,6 +239,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="InputSystemExamples.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mandelbrot.cpp" />
     <ClCompile Include="SimpleAppExamples.cpp" />
@@ -258,6 +259,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="InputSystemExamples.h" />
     <ClInclude Include="Mandelbrot.h" />
     <ClInclude Include="SimpleAppExamples.h" />
     <ClInclude Include="ViewSpawnerExamples.h" />

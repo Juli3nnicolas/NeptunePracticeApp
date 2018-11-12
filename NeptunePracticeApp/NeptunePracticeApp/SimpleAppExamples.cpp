@@ -149,7 +149,7 @@ void SimpleAppExamples::MultiTexturedModelWithSimpleLightingExample()
 	app.add(view);
 
 	Color PURPLE = { 0.5f, 0.0f, 0.5f, 0.0f };
-	app.setBackgroundColor(std::move(PURPLE));
+	app.setBackgroundColor(PURPLE);
 
 	// Set camera location
 	Camera& camera = app.getCamera();							// Pos = (0,0,0)
