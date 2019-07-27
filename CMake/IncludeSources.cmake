@@ -22,14 +22,6 @@ list(APPEND CPP_FILES
 	"src/ViewSpawnerExamples.cpp"
 )
 
-# Add source files
-target_sources(NeptunePracticeApp
-PUBLIC
-	${HEADERS}
-PRIVATE
-	${CPP_FILES}
-)
-
 ## Include shader files
 message("Loading shader files")
 list(APPEND SHADER_FILES 
@@ -52,8 +44,11 @@ list(APPEND SHADER_FILES
 	"Resources/Shaders/SelfPractice/xwingDiffuseLightingUniform.vert"
 )
 
-# Add source files
+# Add files to target
 target_sources(NeptunePracticeApp
+PUBLIC
+${HEADERS}
 PRIVATE
+	${CPP_FILES}
 	${SHADER_FILES}
 )
