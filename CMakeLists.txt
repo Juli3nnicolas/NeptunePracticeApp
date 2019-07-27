@@ -11,6 +11,7 @@ target_compile_definitions(NeptunePracticeApp PUBLIC $<$<CONFIG:DEBUG>:NEP_DEBUG
 
 # Project config
 include("CMake/BuildProjectTree.cmake")
+include("CMake/IncludeSources.cmake")
 
 # Add include directories
 #target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/../Neptune/Dependencies/All/Include)
@@ -36,4 +37,4 @@ PRIVATE
 # Local source
 add_subdirectory(CMake)
 add_subdirectory(Resources)
-add_subdirectory(Src)
+

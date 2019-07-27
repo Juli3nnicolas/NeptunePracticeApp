@@ -4,4 +4,5 @@ message("########## Executing CMake/CMakeLists.txt")
 target_sources(NeptunePracticeApp 
 PRIVATE 
 	"CMake/BuildProjectTree.cmake"
+	"CMake/IncludeSources.cmake"
 )
