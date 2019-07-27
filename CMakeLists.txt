@@ -36,5 +36,3 @@ PRIVATE
 
 # Local source
 add_subdirectory(CMake)
-add_subdirectory(Resources)
-
