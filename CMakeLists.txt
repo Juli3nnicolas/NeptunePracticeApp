@@ -23,19 +23,25 @@ target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/../Nept
 target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/../Neptune/Engine/Multiplatform/Core)
 
 # Add libraries
-link_directories(${CMAKE_SOURCE_DIR}/../Neptune/Dependencies/Win32/Bin/X64)
-link_directories(${CMAKE_SOURCE_DIR}/Libs/X64/Debug)
+#link_directories(${CMAKE_SOURCE_DIR}/../Neptune/Dependencies/Win32/Bin/X64)
+#link_directories(${CMAKE_SOURCE_DIR}/Libs/X64/Debug)
 
 target_link_libraries(NeptunePracticeApp general opengl32)
 
-find_library(GLEW "glew32" ${CMAKE_SOURCE_DIR}/../Neptune/Dependencies/Win32/Bin/X64)
+find_library(GLEW "glew32" ${CMAKE_SOURCE_DIR}/Libs/X64/Debug)
 target_link_libraries(NeptunePracticeApp general ${GLEW})
 
-find_library(SDL2_MAIN_LIB "SDL2main" ${CMAKE_SOURCE_DIR}/../Neptune/Dependencies/Win32/Bin/X64)
-target_link_libraries(NeptunePracticeApp general ${SDL2_MAIN_LIB})
+find_library(SDL2 "SDL2"  ${CMAKE_SOURCE_DIR}/Libs/X64/Debug)
+target_link_libraries(NeptunePracticeApp general ${SDL2})
 
 find_library(Neptune "Neptune" ${CMAKE_SOURCE_DIR}/Libs/X64/Debug)
 target_link_libraries(NeptunePracticeApp debug ${Neptune})
+
+find_library(LIB_KTX "libktx.gld" ${CMAKE_SOURCE_DIR}/Libs/X64/Debug)
+target_link_libraries(NeptunePracticeApp debug ${LIB_KTX})
+
+find_library(ASSIMP "assimp" ${CMAKE_SOURCE_DIR}/Libs/X64/Debug)
+target_link_libraries(NeptunePracticeApp debug ${ASSIMP})
 
 # Add cmake list to source list
 target_sources(NeptunePracticeApp
