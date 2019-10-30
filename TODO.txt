@@ -1,4 +1,4 @@
-- Repair paths in ModelFactory.cpp so that the app can load the shaders
+- In CMakeLists.txt, edit VS' Working Directory config from `$(ProjectDir)` to `$(ProjectDir)/$(Configuration)`
 - assimp and libktx ar compiled with vs2013, so in order to make the whole app work, neptune must be compiled in 2013 too.
 - check if assimp and libktx are already available with conan (my guess is not)
 - To be able co compile the app in 2017, libktx and assimp must be recompiled in 2017 too -> set up a nexus server with conan fetching from it
