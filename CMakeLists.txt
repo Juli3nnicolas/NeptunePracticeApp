@@ -15,17 +15,14 @@ include("CMake/IncludeSources.cmake")
 include("CMake/PostBuildOperations.cmake")
 
 # Add include directories
-target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/../Neptune/Dependencies/All/Include)
-target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/../Neptune/Dependencies/Win32/Include)
-target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/../Neptune/Engine/Win32/HighLevel)
-target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/../Neptune/Engine/Win32/Core)
-target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/../Neptune/Engine/Multiplatform/HighLevel)
-target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/../Neptune/Engine/Multiplatform/Core)
+target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/Libs/Include/Neptune/Dependencies/All)
+target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/Libs/Include/Neptune/Dependencies/Win32)
+target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/Libs/Include/Neptune/Engine/Win32/HighLevel)
+target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/Libs/Include/Neptune/Engine/Win32/Core)
+target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/Libs/Include/Neptune/Engine/Multiplatform/HighLevel)
+target_include_directories(NeptunePracticeApp PUBLIC ${CMAKE_SOURCE_DIR}/Libs/Include/Neptune/Engine/Multiplatform/Core)
 
 # Add libraries
-#link_directories(${CMAKE_SOURCE_DIR}/../Neptune/Dependencies/Win32/Bin/X64)
-#link_directories(${CMAKE_SOURCE_DIR}/Libs/X64/Debug)
-
 target_link_libraries(NeptunePracticeApp general opengl32)
 
 find_library(GLEW "glew32" ${CMAKE_SOURCE_DIR}/Libs/X64/Debug)
